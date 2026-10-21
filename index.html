@@ -1,0 +1,645 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
+<title>居家减脂增肌本</title>
+<style>
+/* Layout: 手机优先单栏训练本；顶部阶段带，内容分四页，底部固定标签栏 */
+:root{
+  --bg:#EDF1EF; --surface:#FFFFFF; --ink:#15201D; --muted:#5D6B67; --line:#D3DCD9;
+  --accent:#0B7A5F; --accent-ink:#FFFFFF; --accent-soft:#D5EDE5;
+  --warn:#9A5A00; --warn-soft:#FBEBD0; --bad:#B4382F;
+  --num:"Barlow Condensed","DIN Alternate","Arial Narrow",sans-serif;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E1513; --surface:#17201E; --ink:#E4ECE9; --muted:#93A29D; --line:#2A3532;
+  --accent:#3DC29C; --accent-ink:#06231B; --accent-soft:#15362C;
+  --warn:#E8A84E; --warn-soft:#3A2B15; --bad:#E86C61; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E1513; --surface:#17201E; --ink:#E4ECE9; --muted:#93A29D; --line:#2A3532;
+  --accent:#3DC29C; --accent-ink:#06231B; --accent-soft:#15362C;
+  --warn:#E8A84E; --warn-soft:#3A2B15; --bad:#E86C61; color-scheme:dark}
+
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.6}
+.wrap{max-width:560px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px calc(96px + env(safe-area-inset-bottom,0px))}
+h1,h2,h3{margin:0;text-wrap:balance;line-height:1.3}
+h2{font-size:18px}
+h3{font-size:15px}
+p{margin:0}
+.num{font-family:var(--num);font-variant-numeric:tabular-nums;letter-spacing:.01em}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.stack{display:flex;flex-direction:column;gap:12px}
+.section{display:flex;flex-direction:column;gap:20px}
+.label{font-size:12px;letter-spacing:.08em;color:var(--muted);font-weight:600}
+
+.top{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;padding-bottom:16px;border-bottom:2px solid var(--ink);margin-bottom:20px}
+.top .wk{font-family:var(--num);font-weight:700;font-size:56px;line-height:.9;letter-spacing:-.01em}
+.top .wk small{font-size:20px;font-weight:600;margin-left:4px}
+.top .ph{text-align:right}
+.chip{display:inline-block;padding:2px 10px;border-radius:99px;font-size:13px;font-weight:600;background:var(--accent-soft);color:var(--accent)}
+.chip.warn{background:var(--warn-soft);color:var(--warn)}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+
+.seg{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--surface)}
+.seg button{flex:1;padding:10px 8px;border:0;background:transparent;color:var(--ink);font:inherit;font-weight:600;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+
+.ex{display:flex;flex-direction:column;gap:10px;padding:14px 0;border-top:1px solid var(--line)}
+.ex:first-child{border-top:0;padding-top:4px}
+.ex-head{display:flex;justify-content:space-between;gap:12px;align-items:baseline}
+.ex-name{font-weight:700;font-size:16px}
+.ex-dose{font-family:var(--num);font-weight:600;font-size:20px;white-space:nowrap}
+.dots{display:flex;gap:10px;flex-wrap:wrap}
+.dot{width:44px;height:44px;border-radius:50%;border:2px solid var(--line);background:transparent;color:var(--muted);font-family:var(--num);font-weight:600;font-size:18px;cursor:pointer}
+.dot[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+details{font-size:14px}
+summary{cursor:pointer;color:var(--accent);font-weight:600;list-style:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+ "}
+details[open] summary::before{content:"− "}
+.cue{display:flex;flex-direction:column;gap:6px;padding-top:8px}
+.cue b{font-weight:600}
+
+.check{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--line);cursor:pointer}
+.check:first-child{border-top:0}
+.check input{width:22px;height:22px;margin:1px 0 0;accent-color:var(--accent);flex:none}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:12px 18px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-weight:600;cursor:pointer}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.wide{width:100%}
+.btn.ghost{background:transparent}
+button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.targets{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.targets div{display:flex;flex-direction:column}
+.targets .v{font-family:var(--num);font-weight:700;font-size:30px;line-height:1.1}
+.targets .u{font-size:12px;color:var(--muted)}
+
+table{width:100%;border-collapse:collapse;font-size:14px}
+td,th{text-align:left;padding:8px 6px;border-top:1px solid var(--line);vertical-align:top}
+th{font-weight:600;color:var(--muted);font-size:12px;letter-spacing:.05em}
+.tbl{overflow-x:auto}
+
+.form{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.form label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted)}
+.form input{font:inherit;font-size:18px;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);min-width:0;width:100%;box-sizing:border-box}
+.form .full{grid-column:1/-1}
+
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stats .v{font-family:var(--num);font-weight:700;font-size:28px;line-height:1.1}
+.chart svg{width:100%;height:auto;display:block}
+.empty{padding:24px 8px;text-align:center;color:var(--muted);font-size:14px}
+
+.note{padding:12px 14px;border-radius:10px;background:var(--warn-soft);color:var(--ink);font-size:14px}
+.note.ok{background:var(--accent-soft)}
+
+.phase{display:grid;grid-template-columns:40px 1fr;gap:12px;padding:14px 0;border-top:1px solid var(--line)}
+.phase:first-child{border-top:0}
+.phase .n{font-family:var(--num);font-weight:700;font-size:32px;line-height:1;color:var(--muted)}
+.phase.on .n{color:var(--accent)}
+ul{margin:0;padding-left:1.2em}
+li+li{margin-top:4px}
+
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.tabs div{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr)}
+.tabs button{border:0;background:transparent;color:var(--muted);font:inherit;font-weight:600;padding:14px 4px;cursor:pointer;border-top:3px solid transparent}
+.tabs button[aria-selected="true"]{color:var(--ink);border-top-color:var(--accent)}
+
+.timer{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(64px + env(safe-area-inset-bottom,0px));z-index:21;display:flex;align-items:center;gap:14px;padding:8px 8px 8px 18px;border-radius:99px;background:var(--ink);color:var(--bg);box-shadow:0 6px 20px rgba(0,0,0,.25)}
+.timer .num{font-size:26px;font-weight:700}
+.timer button{border:0;border-radius:99px;padding:8px 14px;background:var(--bg);color:var(--ink);font:inherit;font-weight:600;cursor:pointer}
+@media (prefers-reduced-motion: no-preference){.dot,.seg button,.tabs button{transition:background .15s,color .15s,border-color .15s}}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="label">训练周</div>
+      <div class="wk" id="wk">1<small>周</small></div>
+    </div>
+    <div class="ph stack" style="gap:4px;align-items:flex-end">
+      <span class="chip" id="phChip">适应期</span>
+      <span class="small muted" id="phSub">起点 78.0kg · 体脂 24.1%</span>
+    </div>
+  </header>
+
+  <section id="today" class="section">
+    <div class="stack">
+      <div class="row">
+        <h2 id="todayTitle">今天练什么</h2>
+        <span class="small muted num" id="weekCount">本周 0/3</span>
+      </div>
+      <div class="seg" role="group" aria-label="选择训练">
+        <button id="pickA" data-t="A">训练 A · 下肢+推</button>
+        <button id="pickB" data-t="B">训练 B · 拉+手臂</button>
+      </div>
+      <p class="small muted" id="suggest"></p>
+    </div>
+
+    <div class="card">
+      <div class="row" style="margin-bottom:4px"><h3>热身 10 分钟</h3><span class="small muted">不热身容易伤腰膝</span></div>
+      <div id="warm"></div>
+    </div>
+
+    <div class="card">
+      <div class="row" style="margin-bottom:6px"><h3>力量训练</h3><span class="small muted">做完一组点一个圈，自动开始休息计时</span></div>
+      <div id="exList"></div>
+    </div>
+
+    <div class="card">
+      <div class="row" style="margin-bottom:4px"><h3>收尾燃脂 + 拉伸</h3><span class="small muted">约 20 分钟</span></div>
+      <div id="fin"></div>
+    </div>
+
+    <button class="btn primary wide" id="finishBtn">完成今天的训练</button>
+    <p class="small muted">一周练 3 天，隔天练（比如一三五或二四六），A 和 B 轮流做。不练的日子快走 30–40 分钟，凑够步数。</p>
+  </section>
+
+  <section id="food" class="section" hidden>
+    <div class="stack">
+      <h2>每天吃多少</h2>
+      <div class="card targets" id="targets"></div>
+      <p class="small muted" id="targetNote"></p>
+    </div>
+
+    <div class="card stack">
+      <h3>今日打卡</h3>
+      <div id="habits"></div>
+      <p class="small muted num" id="habitWeek"></p>
+    </div>
+
+    <div class="card stack">
+      <h3>不用称重的餐盘法（每一餐）</h3>
+      <ul>
+        <li><b>肉蛋鱼豆一掌心</b>：大小厚度跟自己手掌差不多</li>
+        <li><b>主食一拳</b>：熟米饭、馒头、面条都按拳头大小算</li>
+        <li><b>蔬菜两拳以上</b>：绿叶菜不限量，土豆、藕、山药算主食</li>
+        <li><b>油一小勺</b>：全天炒菜油不超过 2.5 汤匙（约 25 克）</li>
+      </ul>
+    </div>
+
+    <div class="card stack">
+      <h3>一天吃法示例（约 1800 大卡 / 蛋白质约 140g）</h3>
+      <div class="tbl"><table>
+        <tr><th>餐次</th><th>吃什么</th></tr>
+        <tr><td>早餐</td><td>鸡蛋 2 个、纯牛奶 250ml、馒头 1 个（约 80g）或燕麦片 50g、番茄或黄瓜 1 个</td></tr>
+        <tr><td>午餐</td><td>米饭 1 拳（熟 150g）、清炖或卤牛肉（生重 200g，牛腱或里脊）、少油炒青菜一大盘</td></tr>
+        <tr><td>加餐</td><td>无糖酸奶 150g + 苹果 1 个</td></tr>
+        <tr><td>晚餐</td><td>鸡胸肉或鱼（生重 200g）、红薯或玉米 1 拳半、北豆腐 100g、蔬菜两拳</td></tr>
+      </table></div>
+      <p class="small muted">每天差不多这么吃就行，不用天天算。菜可以按下面的替换表随便换。</p>
+    </div>
+
+    <div class="card stack">
+      <h3>替换表</h3>
+      <div class="tbl"><table>
+        <tr><th>一拳主食 ≈</th><th>一掌蛋白质 ≈</th></tr>
+        <tr><td>熟米饭 150g</td><td>鸡胸肉 生重 150g</td></tr>
+        <tr><td>馒头 1 个（80g）</td><td>牛腱 / 牛里脊 生重 150g</td></tr>
+        <tr><td>熟面条 200g</td><td>羊后腿瘦肉 生重 150g</td></tr>
+        <tr><td>红薯 / 土豆 / 玉米 约 250g</td><td>鱼、虾 生重 180g</td></tr>
+        <tr><td>燕麦或杂粮 生重 50g</td><td>北豆腐 250g</td></tr>
+        <tr><td>馕 约 60g</td><td>鸡蛋 3 个 + 牛奶 1 杯</td></tr>
+      </table></div>
+    </div>
+
+    <div class="card stack">
+      <h3>家常清真饭怎么吃</h3>
+      <ul>
+        <li><b>牛肉面、拉面</b>：面剩三分之一，加一份牛肉，汤别喝完</li>
+        <li><b>手抓饭、羊肉泡馍</b>：油和主食都多，一周最多一次，饭量减半，配一盘凉拌菜</li>
+        <li><b>油香、馓子、油饼</b>：节日吃几口，平时别当早餐</li>
+        <li><b>羊肉</b>：选后腿肉，切掉肥边；炖、烤、蒸都比炒和炸好</li>
+        <li><b>牛肉</b>：牛腱、里脊最瘦；肥牛片和牛腩脂肪高，少吃</li>
+        <li><b>喝的</b>：奶茶、甜饮料换成清茶或无糖饮料</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="log" class="section" hidden>
+    <div class="card stack">
+      <h2>记录今天</h2>
+      <div class="form">
+        <label>日期<input type="date" id="fDate"></label>
+        <label>体重 kg<input type="number" id="fW" inputmode="decimal" step="0.1" min="40" max="150" placeholder="78.0"></label>
+        <label class="full">腰围 cm（每周一量一次，肚脐那一圈，呼气后量）<input type="number" id="fWaist" inputmode="decimal" step="0.5" min="50" max="150" placeholder="可不填"></label>
+      </div>
+      <button class="btn primary" id="saveLog">保存</button>
+      <p class="small muted">每天早上起床、上完厕所、吃饭前称。单天体重会上下跳 1kg，看周平均就行。</p>
+    </div>
+
+    <div class="stats" id="stats"></div>
+    <div id="advice"></div>
+
+    <div class="card chart">
+      <div class="row" style="margin-bottom:8px"><h3>体重趋势</h3><span class="small muted">圆点是每天，线是 7 天平均</span></div>
+      <div id="chart"></div>
+    </div>
+
+    <div class="card stack">
+      <h3>最近记录</h3>
+      <div id="recent"></div>
+    </div>
+
+    <div class="card stack">
+      <h3>发给家人看</h3>
+      <p class="small muted">复制最近两周的体重、腰围、训练和打卡情况，微信发过去就能帮你调整计划。</p>
+      <button class="btn" id="copyBtn">复制近期记录</button>
+      <textarea id="copyBox" rows="6" hidden style="width:100%;box-sizing:border-box;font:inherit;font-size:13px;padding:8px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink)"></textarea>
+    </div>
+  </section>
+
+  <section id="plan" class="section" hidden>
+    <div class="card">
+      <h2 style="margin-bottom:6px">三个阶段</h2>
+      <div id="phases"></div>
+    </div>
+
+    <div class="card stack">
+      <h3>什么时候加难度</h3>
+      <p>每个动作都有次数范围，比如 12–15 次。所有组都能做满上限、动作还标准，下次就升级：先放慢下放到 3 秒，再换更难的版本（每个动作的“怎么进阶”里写了）。</p>
+      <div class="note"><b>什么时候买重哑铃：</b>5kg 高脚杯深蹲或单臂划船能轻松做满 3 组 20 次，就该买一对可调哑铃了，单只能调到 15–20kg 就够用。按新手进度一般在第 4–6 周。</div>
+    </div>
+
+    <div class="card stack">
+      <h3>每周日看一次，按这个调</h3>
+      <ul>
+        <li>周平均体重每周掉 0.4–0.6kg：吃法不变</li>
+        <li>连续两周掉不到 0.2kg：每天少吃 150 大卡（主食少半拳），或每天多走 2000 步</li>
+        <li>一周掉超过 1kg（第一二周除外，那是掉水分）：每天多吃半拳主食</li>
+        <li>腰围在降、体重不动：说明在长肌肉掉脂肪，继续</li>
+      </ul>
+    </div>
+
+    <div class="card stack">
+      <h3>拍照对比</h3>
+      <p>每 4 周拍一次：早上空腹，同一个地方、同一盏灯，正面、侧面、背面各一张，穿同一条短裤。体重秤看不出的变化，照片能看出来。</p>
+    </div>
+
+    <div class="card stack">
+      <h3>注意安全</h3>
+      <ul>
+        <li>健腹轮从跪姿开始，只滚到腰不塌的位置。练完腰酸说明滚太远了，下次缩短距离</li>
+        <li>刚开始练，肌肉酸两三天是正常的；关节疼不正常，换动作或停下</li>
+        <li>头晕、胸闷、心慌立刻停</li>
+        <li>肚子和胳膊会随着全身减脂一起瘦，没法只瘦一个地方。练手臂是为了瘦下来以后线条好看</li>
+      </ul>
+    </div>
+
+    <div class="card stack">
+      <h3>设置</h3>
+      <div class="form">
+        <label class="full">开始训练的日期<input type="date" id="startDate"></label>
+      </div>
+      <button class="btn" id="phaseBtn">体脂达标了，切换到增肌期</button>
+      <p class="small muted">记录只保存在这台手机的浏览器里。换手机或清浏览器数据会丢，所以隔一阵复制一次记录发出去留底。</p>
+    </div>
+  </section>
+</div>
+
+<div class="timer" id="timer" hidden>
+  <span>休息</span><span class="num" id="tLeft">1:00</span>
+  <button id="tAdd">+30秒</button><button id="tSkip">跳过</button>
+</div>
+
+<nav class="tabs" aria-label="页面"><div role="tablist">
+  <button role="tab" data-tab="today">训练</button>
+  <button role="tab" data-tab="food">饮食</button>
+  <button role="tab" data-tab="log">记录</button>
+  <button role="tab" data-tab="plan">计划</button>
+</div></nav>
+
+<script>
+const BASE={w:78.0,bf:24.1};
+const WARM=[
+  '原地踏步或开合（不跳，左右交替迈步）3 分钟',
+  '猫牛式 8 次 + 手臂大绕环前后各 10 次',
+  '弓步转体（世界最伟大拉伸）每边 5 次',
+  '徒手深蹲 10 次 + 臀桥 10 次'
+];
+const FIN=[
+  '低冲击循环 4 轮：原地高抬腿 30 秒 → 交替侧步开合 30 秒 → 慢速登山跑 30 秒 → 休息 30 秒',
+  '快走或爬楼梯 10 分钟（时间够就做）',
+  '拉伸 5 分钟：胸、大腿前后侧、臀部、背，每个 30 秒'
+];
+const PLAN={
+  A:{name:'训练 A · 下肢+推',ex:[
+    {n:'高脚杯深蹲',eq:'5kg 哑铃竖着抱在胸前',reps:'12–15',reps3:'8–12',rest:75,
+     cue:'脚比肩稍宽、脚尖微外八。屁股往后下方坐，膝盖跟脚尖同一个方向，蹲到大腿接近水平，脚跟不离地。',
+     err:'膝盖往里扣；弯腰低头；只蹲一半。',
+     next:'3 组都能做满 15 次：每次下蹲数 3 秒 → 1.5 次深蹲（蹲到底起一半再蹲下去算一次）→ 换重哑铃'},
+    {n:'俯卧撑',eq:'手撑床沿或桌边（上斜）',reps:'8–12',reps3:'8–12',rest:75,
+     cue:'身体从头到脚一条直线，手比肩稍宽，下去时手肘往身后约 45°，胸口快碰到边沿再推起。',
+     err:'塌腰、撅屁股；手肘向两边张开成 90°。',
+     next:'手撑的位置越来越低：桌边 → 床沿 → 矮凳 → 地面跪姿 → 标准俯卧撑'},
+    {n:'单臂哑铃划船',eq:'5kg，一手一膝撑在床或凳上',reps:'12–15 每侧',reps3:'10–12 每侧',rest:60,
+     cue:'背平，像锯木头一样把哑铃拉到腰侧，顶端停 1 秒感觉后背在用力，慢慢放下。',
+     err:'用胳膊甩；耸肩；身体扭来扭去。',
+     next:'做满后：顶端停 2 秒、下放 3 秒 → 换重哑铃'},
+    {n:'哑铃坐姿推举',eq:'5kg × 2，坐在椅子上背挺直',reps:'10–12',reps3:'8–12',rest:60,
+     cue:'哑铃从耳朵旁边推到头顶，手臂伸直但别锁死，收紧肚子别后仰。',
+     err:'腰往后仰借力；推得太快。',
+     next:'做满后换站姿，再之后换重哑铃'},
+    {n:'臀桥',eq:'躺在地上，可以抱 5kg 哑铃放胯上',reps:'15',reps3:'12–15',rest:45,
+     cue:'脚跟靠近屁股，用屁股把胯顶起来，顶端夹紧停 2 秒。',
+     err:'用腰拱起来；顶得太高腰椎反弓。',
+     next:'单腿臀桥 每侧 10–12 次'},
+    {n:'健腹轮（跪姿）',eq:'膝盖垫毛巾',reps:'5–8',reps3:'8–10',rest:60,
+     cue:'先收肚子、微微含胸，再往前滚，只滚到腰不塌的距离，用肚子的力量拉回来。',
+     err:'滚太远腰往下塌，这是最容易伤腰的地方。',
+     next:'每周滚远一点点；能滚到手臂伸直还不塌腰再考虑站姿'},
+    {n:'平板支撑',eq:'手肘撑地',reps:'20–40 秒',reps3:'40–60 秒',rest:45,
+     cue:'手肘在肩膀正下方，夹紧屁股，肚子往里收，身体一条直线。',
+     err:'屁股翘太高或塌下去；憋气。',
+     next:'到 60 秒后改成单手单脚交替抬起'}
+  ]},
+  B:{name:'训练 B · 拉+手臂',ex:[
+    {n:'反向弓步',eq:'徒手，熟练后两手各拿 5kg',reps:'10 每侧',reps3:'8–12 每侧',rest:75,
+     cue:'一条腿往后退一大步，两个膝盖都弯到约 90°，后膝快碰地，前脚跟发力站起来。',
+     err:'前膝盖往里扣；上身前倾太多。',
+     next:'手拿 5kg → 保加利亚分腿蹲（后脚搭在床沿）'},
+    {n:'哑铃罗马尼亚硬拉',eq:'5kg × 2',reps:'12–15',reps3:'10–12',rest:75,
+     cue:'膝盖微弯不动，屁股往后推，哑铃贴着腿滑到膝盖下方，感觉大腿后侧被拉紧，再夹屁股站起来。背始终是平的。',
+     err:'弯腰驼背去够地；变成了深蹲。',
+     next:'下放 3 秒 → 单腿硬拉 → 换重哑铃'},
+    {n:'双手俯身划船',eq:'5kg × 2',reps:'15',reps3:'10–12',rest:60,
+     cue:'屈膝、上身前倾约 45°、背平，两个手肘往后拉到身体两侧，挤一下肩胛骨。',
+     err:'起身借力；耸肩。',
+     next:'顶端停 2 秒 → 换重哑铃'},
+    {n:'窄距俯卧撑',eq:'手撑床沿或桌边，两手比肩窄',reps:'8–12',reps3:'8–12',rest:60,
+     cue:'跟俯卧撑一样，手肘贴着身体往后走，主要练手臂后侧。',
+     err:'手肘往外张；塌腰。',
+     next:'跟俯卧撑一样，支撑点逐步降低'},
+    {n:'哑铃侧平举',eq:'2kg × 2',reps:'15',reps3:'12–15',rest:45,
+     cue:'手肘微弯，像往两边倒水一样抬到肩膀高度，慢慢放下。',
+     err:'耸肩；甩上去。',
+     next:'做满后换 5kg，次数退回 10 次重新加'},
+    {n:'哑铃弯举 + 椅子臂屈伸',eq:'弯举 5kg × 2；臂屈伸手撑椅子边',reps:'各 10–12',reps3:'各 10–12',rest:60,
+     cue:'弯举：大臂贴身体不动，只动小臂。臂屈伸：背贴着椅子边往下，手肘向后弯到约 90°。',
+     err:'弯举身体前后晃；臂屈伸手肘往外张、下太深压肩膀。',
+     next:'臂屈伸先屈膝做，再把腿伸直；弯举做满后放慢下放'},
+    {n:'死虫 + 健腹轮',eq:'先死虫再健腹轮',reps:'8 每侧 + 5–8',reps3:'10 每侧 + 8–10',rest:60,
+     cue:'死虫：躺着腰贴地，对侧手脚慢慢伸远再收回，全程腰不离地。健腹轮同 A 日。',
+     err:'腰拱离地面；做太快。',
+     next:'死虫手里拿 2kg 哑铃'}
+  ]}
+};
+const HABITS=[
+  {k:'p',t:'蛋白质吃够（三餐都有一掌心肉蛋鱼豆）'},
+  {k:'s',t:'步数达标'},
+  {k:'o',t:'少油：全天炒菜油不超过 2.5 汤匙'},
+  {k:'w',t:'喝水 2 升以上，没喝甜饮料'},
+  {k:'z',t:'睡够 7 小时'}
+];
+const TARGET={1:{kcal:1800,p:140,f:55,c:185},2:{kcal:1800,p:140,f:55,c:185},3:{kcal:2400,p:135,f:65,c:320}};
+const PHASES=[
+  {t:'适应期',when:'第 1–4 周',items:['每个动作做 2 组，先把动作学对，每组留 2–3 次的余力','每天步数 6000 以上','饮食直接按 1800 大卡来，先做到三餐都有一掌心蛋白质、炒菜少放油']},
+  {t:'减脂期',when:'第 5 周起，到达标为止',items:['每个动作做 3 组，每组做到只剩 1–2 次余力','每天步数 8000 以上','1800 大卡、蛋白质 140g，预计每周掉 0.4–0.6kg','达标线：体重到 71kg 左右、腰围比开始时小 7–8cm，肚子明显平了（体脂约 16%）']},
+  {t:'增肌期',when:'减脂达标后',items:['必须有更重的哑铃。每个动作做 4 组，每组 8–12 次','热量提到 2400 大卡起，体重每月涨 0.5–1kg','腰围一个月涨超过 1cm 就是吃多了，减半拳主食']}
+];
+
+const KEY='jzzj-v1';
+const $=s=>document.querySelector(s);
+const ymd=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const parse=s=>{const[a,b,c]=s.split('-').map(Number);return new Date(a,b-1,c)};
+const addDays=(s,n)=>{const d=parse(s);d.setDate(d.getDate()+n);return ymd(d)};
+const diffDays=(a,b)=>Math.round((parse(b)-parse(a))/864e5);
+const md=s=>s.slice(5).replace('-','/');
+const TODAY=ymd(new Date());
+
+function fresh(){return {v:1,start:TODAY,phase3:false,sessions:[],sets:{},logs:{},habits:{},pick:null}}
+let S;
+try{S=JSON.parse(localStorage.getItem(KEY));}catch(e){}
+if(!S||S.v!==1)S=fresh();
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+save();
+
+const week=()=>Math.max(1,Math.floor(diffDays(S.start,TODAY)/7)+1);
+const phase=()=>S.phase3?3:(week()<=4?1:2);
+const setsFor=()=>[0,2,3,4][phase()];
+const mondayOf=s=>{const d=parse(s);const w=(d.getDay()+6)%7;d.setDate(d.getDate()-w);return ymd(d)};
+const sessionsSorted=()=>[...S.sessions].sort((a,b)=>a.date<b.date?-1:1);
+
+function suggested(){
+  const done=S.sessions.find(x=>x.date===TODAY);
+  if(done)return done.type;
+  const past=sessionsSorted().filter(x=>x.date<TODAY);
+  return past.length?(past[past.length-1].type==='A'?'B':'A'):'A';
+}
+function curType(){return S.pick&&S.pick.date===TODAY?S.pick.type:suggested()}
+
+function renderHeader(){
+  const p=phase();
+  $('#wk').innerHTML=`${week()}<small>周</small>`;
+  const chip=$('#phChip');chip.textContent=['','适应期','减脂期','增肌期'][p];
+  chip.className='chip'+(p===3?' warn':'');
+  const ws=sortedLogs().filter(x=>x.w);
+  const last=ws.length?ws[ws.length-1].w:null;
+  $('#phSub').textContent=last?`起点 ${BASE.w.toFixed(1)} → 现在 ${last.toFixed(1)}kg`:`起点 ${BASE.w.toFixed(1)}kg · 体脂 ${BASE.bf}%`;
+}
+
+function checkRow(key,text){
+  const on=!!S.sets[key];
+  return `<label class="check"><input type="checkbox" data-k="${key}" ${on?'checked':''}><span>${text}</span></label>`;
+}
+function renderToday(){
+  const t=curType(),n=setsFor(),p=phase();
+  $('#pickA').setAttribute('aria-pressed',t==='A');$('#pickB').setAttribute('aria-pressed',t==='B');
+  const thisWeek=S.sessions.filter(x=>mondayOf(x.date)===mondayOf(TODAY)).length;
+  $('#weekCount').textContent=`本周 ${thisWeek}/3`;
+  const done=S.sessions.find(x=>x.date===TODAY);
+  $('#suggest').textContent=done?`今天已完成${PLAN[done.type].name}，明天休息走路。`:`按上次的顺序，今天该练 ${t}。每个动作 ${n} 组。`;
+  $('#warm').innerHTML=WARM.map((w,i)=>checkRow(`${TODAY}|${t}|w${i}`,w)).join('');
+  $('#fin').innerHTML=FIN.map((w,i)=>checkRow(`${TODAY}|${t}|f${i}`,w)).join('');
+  $('#exList').innerHTML=PLAN[t].ex.map((e,i)=>{
+    const key=`${TODAY}|${t}|${i}`;const arr=S.sets[key]||[];
+    const dots=Array.from({length:n},(_,j)=>`<button class="dot" data-k="${key}" data-j="${j}" data-rest="${e.rest}" aria-pressed="${!!arr[j]}" aria-label="第${j+1}组">${j+1}</button>`).join('');
+    return `<div class="ex">
+      <div class="ex-head"><span class="ex-name">${e.n}</span><span class="ex-dose">${n} × ${p===3?e.reps3:e.reps}</span></div>
+      <span class="small muted">${e.eq} · 组间休息 ${e.rest} 秒</span>
+      <div class="dots">${dots}</div>
+      <details><summary>动作要点</summary><div class="cue">
+        <p>${e.cue}</p><p><b>常见错误：</b>${e.err}</p><p><b>怎么进阶：</b>${e.next}</p>
+      </div></details></div>`;
+  }).join('');
+  const fb=$('#finishBtn');
+  fb.textContent=done?'撤销今天的完成记录':`完成${PLAN[t].name}`;
+  fb.className=done?'btn ghost wide':'btn primary wide';
+}
+
+document.addEventListener('change',e=>{
+  const k=e.target.dataset&&e.target.dataset.k;
+  if(k&&e.target.type==='checkbox'){S.sets[k]=e.target.checked;save();}
+  const h=e.target.dataset&&e.target.dataset.h;
+  if(h){S.habits[TODAY]=S.habits[TODAY]||{};S.habits[TODAY][h]=e.target.checked;save();renderHabitWeek();}
+});
+$('#exList').addEventListener('click',e=>{
+  const b=e.target.closest('.dot');if(!b)return;
+  const k=b.dataset.k,j=+b.dataset.j;
+  const arr=S.sets[k]||[];arr[j]=!arr[j];S.sets[k]=arr;save();
+  b.setAttribute('aria-pressed',!!arr[j]);
+  if(arr[j])startRest(+b.dataset.rest);
+});
+['A','B'].forEach(t=>$('#pick'+t).addEventListener('click',()=>{S.pick={date:TODAY,type:t};save();renderToday();}));
+$('#finishBtn').addEventListener('click',()=>{
+  const done=S.sessions.find(x=>x.date===TODAY);
+  if(done)S.sessions=S.sessions.filter(x=>x.date!==TODAY);
+  else S.sessions.push({date:TODAY,type:curType()});
+  save();renderToday();
+});
+
+let tEnd=0,tId=null,actx=null;
+const fmt=s=>`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
+function startRest(sec){
+  try{actx=actx||new (window.AudioContext||window.webkitAudioContext)()}catch(e){}
+  tEnd=Date.now()+sec*1000;$('#timer').hidden=false;tick();clearInterval(tId);tId=setInterval(tick,250);
+}
+function tick(){const left=Math.ceil((tEnd-Date.now())/1000);if(left<=0){stopRest();beep();return}$('#tLeft').textContent=fmt(left)}
+function stopRest(){clearInterval(tId);$('#timer').hidden=true}
+function beep(){if(!actx)return;try{const o=actx.createOscillator(),g=actx.createGain();o.frequency.value=880;g.gain.value=.15;o.connect(g);g.connect(actx.destination);o.start();o.stop(actx.currentTime+.3)}catch(e){}}
+$('#tSkip').addEventListener('click',stopRest);
+$('#tAdd').addEventListener('click',()=>{tEnd+=30000;tick()});
+
+function renderFood(){
+  const p=phase(),T=TARGET[p];
+  $('#targets').innerHTML=[['热量',T.kcal,'大卡'],['蛋白质',T.p,'克'],['脂肪',T.f,'克'],['碳水',T.c,'克']]
+    .map(([a,v,u])=>`<div><span class="label">${a}</span><span class="v">${v}</span><span class="u">${u}</span></div>`).join('');
+  $('#targetNote').textContent=p===3?'增肌期：比维持热量多 200–300 大卡，体重每月涨 0.5–1kg 正好。':'你平时每天大约消耗 2300 大卡，吃 1800 就有 500 大卡缺口，一周大约掉 0.5kg。蛋白质吃够，减的才是脂肪不是肌肉。';
+  const steps=p===1?'6000':'8000';
+  const h=S.habits[TODAY]||{};
+  $('#habits').innerHTML=HABITS.map(x=>`<label class="check"><input type="checkbox" data-h="${x.k}" ${h[x.k]?'checked':''}><span>${x.k==='s'?`步数 ${steps} 以上`:x.t}</span></label>`).join('');
+  renderHabitWeek();
+}
+function renderHabitWeek(){
+  let tot=0;for(let i=0;i<7;i++){const h=S.habits[addDays(TODAY,-i)]||{};tot+=HABITS.filter(x=>h[x.k]).length}
+  $('#habitWeek').textContent=`最近 7 天完成 ${tot}/${HABITS.length*7} 项`;
+}
+
+function sortedLogs(){return Object.entries(S.logs).map(([d,v])=>({d,...v})).sort((a,b)=>a.d<b.d?-1:1)}
+function avgRange(from,to){const xs=sortedLogs().filter(x=>x.w&&x.d>=from&&x.d<=to).map(x=>x.w);return xs.length>=3?xs.reduce((a,b)=>a+b,0)/xs.length:null}
+
+function renderLog(){
+  $('#fDate').value=$('#fDate').value||TODAY;
+  const L=sortedLogs(),ws=L.filter(x=>x.w),wa=L.filter(x=>x.waist);
+  const last=ws.length?ws[ws.length-1].w:null;
+  const chg=last!=null?last-BASE.w:null;
+  const waistChg=wa.length>=2?wa[wa.length-1].waist-wa[0].waist:null;
+  $('#stats').innerHTML=[
+    ['当前体重',last!=null?last.toFixed(1):'—','kg'],
+    ['比起点',chg!=null?(chg>0?'+':'')+chg.toFixed(1):'—','kg'],
+    ['腰围变化',waistChg!=null?(waistChg>0?'+':'')+waistChg.toFixed(1):'—','cm']
+  ].map(([a,v,u])=>`<div class="card"><div class="label">${a}</div><div class="v">${v}</div><div class="small muted">${u}</div></div>`).join('');
+
+  const cur=avgRange(addDays(TODAY,-6),TODAY),prev=avgRange(addDays(TODAY,-13),addDays(TODAY,-7));
+  let adv='';
+  if(cur==null||prev==null){adv=`<div class="note ok">连续记两周（每周至少 3 天）后，这里会按周平均体重告诉你该不该调整吃法。</div>`}
+  else{
+    const d=cur-prev,p=phase();let msg,ok=true;
+    if(p===3){
+      if(d<0.1){msg='体重没怎么涨，每天加半拳主食。';ok=false}
+      else if(d>0.35){msg='涨得偏快，多半是脂肪，每天减半拳主食。';ok=false}
+      else msg='涨得正好，继续。';
+    }else{
+      const loss=-d;
+      if(loss>1&&week()>2){msg='掉得太快，容易掉肌肉，每天多吃半拳主食。';ok=false}
+      else if(loss<0.2){msg='掉得偏慢。下周还这样就每天少吃半拳主食，或多走 2000 步。';ok=false}
+      else msg='节奏正好，吃法不变。';
+    }
+    adv=`<div class="note${ok?' ok':''}"><b class="num">本周平均 ${cur.toFixed(1)}kg，上周 ${prev.toFixed(1)}kg（${d>0?'+':''}${d.toFixed(1)}）。</b>${msg}</div>`;
+  }
+  $('#advice').innerHTML=adv;
+  $('#chart').innerHTML=chartSVG(ws);
+  $('#recent').innerHTML=L.length?`<div class="tbl"><table><tr><th>日期</th><th>体重</th><th>腰围</th><th></th></tr>${L.slice(-10).reverse().map(x=>`<tr><td class="num">${md(x.d)}</td><td class="num">${x.w?x.w.toFixed(1):'—'}</td><td class="num">${x.waist||'—'}</td><td style="text-align:right"><button class="btn ghost small" style="padding:4px 10px" data-del="${x.d}">删除</button></td></tr>`).join('')}</table></div>`:'<p class="empty">还没有记录。第一天记得称体重、量腰围。</p>';
+}
+function chartSVG(ws){
+  if(ws.length<2)return '<p class="empty">记录两天以上体重，这里会画出趋势线。</p>';
+  const W=600,H=220,pl=44,pr=12,pt=12,pb=28;
+  const d0=ws[0].d,span=Math.max(1,diffDays(d0,ws[ws.length-1].d));
+  const vals=ws.map(x=>x.w);let lo=Math.min(...vals,BASE.w),hi=Math.max(...vals,BASE.w);
+  lo=Math.floor(lo-0.5);hi=Math.ceil(hi+0.5);
+  const X=d=>pl+(W-pl-pr)*diffDays(d0,d)/span,Y=v=>pt+(H-pt-pb)*(hi-v)/(hi-lo);
+  const avg=ws.map(x=>{const xs=ws.filter(y=>y.d<=x.d&&y.d>=addDays(x.d,-6)).map(y=>y.w);return {d:x.d,v:xs.reduce((a,b)=>a+b,0)/xs.length}});
+  const ticks=[lo,(lo+hi)/2,hi];
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="体重趋势">
+    ${ticks.map(t=>`<line x1="${pl}" x2="${W-pr}" y1="${Y(t)}" y2="${Y(t)}" stroke="var(--line)" stroke-width="1"/><text x="${pl-8}" y="${Y(t)+4}" text-anchor="end" font-size="12" fill="var(--muted)" font-family="var(--num)">${t.toFixed(t%1?1:0)}</text>`).join('')}
+    <line x1="${pl}" x2="${W-pr}" y1="${Y(BASE.w)}" y2="${Y(BASE.w)}" stroke="var(--muted)" stroke-dasharray="4 4" stroke-width="1"/>
+    ${ws.map(x=>`<circle cx="${X(x.d)}" cy="${Y(x.w)}" r="3.5" fill="var(--muted)" opacity=".55"/>`).join('')}
+    <polyline fill="none" stroke="var(--accent)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" points="${avg.map(a=>`${X(a.d)},${Y(a.v)}`).join(' ')}"/>
+    <circle cx="${X(avg[avg.length-1].d)}" cy="${Y(avg[avg.length-1].v)}" r="5" fill="var(--accent)"/>
+    <text x="${pl}" y="${H-8}" font-size="12" fill="var(--muted)" font-family="var(--num)">${md(d0)}</text>
+    <text x="${W-pr}" y="${H-8}" font-size="12" fill="var(--muted)" text-anchor="end" font-family="var(--num)">${md(ws[ws.length-1].d)}</text>
+  </svg>`;
+}
+$('#saveLog').addEventListener('click',()=>{
+  const d=$('#fDate').value||TODAY,w=parseFloat($('#fW').value),wa=parseFloat($('#fWaist').value);
+  if(isNaN(w)&&isNaN(wa))return;
+  const r=S.logs[d]||{};if(!isNaN(w))r.w=w;if(!isNaN(wa))r.waist=wa;S.logs[d]=r;save();
+  $('#fW').value='';$('#fWaist').value='';
+  const b=$('#saveLog');b.textContent='已保存';setTimeout(()=>b.textContent='保存',1500);
+  renderLog();renderHeader();
+});
+$('#recent').addEventListener('click',e=>{
+  const b=e.target.closest('[data-del]');if(!b)return;
+  if(b.dataset.armed){delete S.logs[b.dataset.del];save();renderLog();renderHeader();return}
+  b.dataset.armed='1';b.textContent='确定删除';setTimeout(()=>{if(b.isConnected){delete b.dataset.armed;b.textContent='删除'}},3000);
+});
+
+function reportText(){
+  const from=addDays(TODAY,-13);
+  const L=sortedLogs().filter(x=>x.d>=from);
+  const ss=sessionsSorted().filter(x=>x.date>=from);
+  const hab=HABITS.map(x=>{let c=0;for(let i=0;i<7;i++){const h=S.habits[addDays(TODAY,-i)]||{};if(h[x.k])c++}return `${x.k==='s'?'步数':x.t.split('（')[0].split('：')[0]} ${c}/7`});
+  return [`【减脂增肌记录】第${week()}周 · ${['','适应期','减脂期','增肌期'][phase()]}（${S.start} 开始）`,
+    `起点 ${BASE.w}kg / 体脂 ${BASE.bf}%`,
+    '近两周体重腰围：',...(L.length?L.map(x=>`${md(x.d)}  ${x.w?x.w.toFixed(1)+'kg':''}${x.waist?'  腰'+x.waist:''}`):['（没记）']),
+    `近两周训练 ${ss.length} 次：${ss.map(x=>md(x.date)+x.type).join('、')||'无'}`,
+    `近7天打卡：${hab.join('，')}`].join('\n');
+}
+$('#copyBtn').addEventListener('click',()=>{
+  const txt=reportText(),box=$('#copyBox'),b=$('#copyBtn');
+  box.value=txt;
+  const fallback=()=>{box.hidden=false;box.focus();box.select();b.textContent='已选中，长按复制'};
+  try{navigator.clipboard.writeText(txt).then(()=>{b.textContent='已复制，去微信粘贴';box.hidden=true},fallback)}catch(e){fallback()}
+});
+
+function renderPlan(){
+  const p=phase();
+  $('#phases').innerHTML=PHASES.map((x,i)=>`<div class="phase${p===i+1?' on':''}"><span class="n">${i+1}</span><div class="stack" style="gap:6px">
+    <div class="row"><h3>${x.t}</h3><span class="small muted">${x.when}${p===i+1?' · 现在':''}</span></div>
+    <ul class="small">${x.items.map(t=>`<li>${t}</li>`).join('')}</ul>
+    ${i===1?`<p class="small muted">照每周 0.5kg 算，大约在 ${addDays(S.start,7*19).replace(/-/g,'/')} 前后达标。</p>`:''}
+  </div></div>`).join('');
+  $('#startDate').value=S.start;
+  $('#phaseBtn').textContent=S.phase3?'回到减脂期':'体脂达标了，切换到增肌期';
+}
+$('#startDate').addEventListener('change',e=>{if(e.target.value){S.start=e.target.value;save();renderAll()}});
+$('#phaseBtn').addEventListener('click',()=>{
+  const b=$('#phaseBtn');
+  if(!b.dataset.armed){b.dataset.armed='1';b.textContent='确定切换？再点一次';setTimeout(()=>{delete b.dataset.armed;renderPlan()},4000);return}
+  delete b.dataset.armed;S.phase3=!S.phase3;save();renderAll();
+});
+
+const TABS=['today','food','log','plan'];
+function show(tab){
+  TABS.forEach(t=>{$('#'+t).hidden=t!==tab});
+  document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===tab));
+  try{history.replaceState(null,'','#'+tab)}catch(e){}
+  window.scrollTo(0,0);
+}
+document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>show(b.dataset.tab)));
+
+function renderAll(){renderHeader();renderToday();renderFood();renderLog();renderPlan()}
+renderAll();
+const h=location.hash.slice(1);show(TABS.includes(h)?h:'today');
+</script>
+
+</body>
+</html>
