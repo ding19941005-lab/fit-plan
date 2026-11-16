@@ -5,14 +5,14 @@ const vm = require('node:vm');
 
 const root = path.resolve(__dirname, '..');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
-const source = html.match(/<script>([\s\S]*?)<\/script>/)[1];
+const source = fs.readFileSync(path.join(root, 'exercises.js'), 'utf8')+'\n'+html.match(/<script>([\s\S]*?)<\/script>/)[1];
 let checks = 0;
 function check(label, run) {
   run();
   console.log('PASS', label);
   checks++;
 }
-function app(initial) {
+function app(initial, confirm = true) {
   const nodes = new Map();
   const events = {};
   let saved;
@@ -38,6 +38,7 @@ function app(initial) {
     setTimeout() {}, setInterval() {}, clearInterval() {}
   });
   vm.runInContext(source, context);
+  if(confirm)node('#confirmWeek').handlers.click();
   return { node, events, eval: s => vm.runInContext(s, context), saved: () => saved };
 }
 
@@ -48,31 +49,34 @@ check('three distinct training days cover chest, shoulders, back, glutes, legs a
   assert.equal(a.eval('PLAN.A.name'), '胸肩＋核心');
   assert.equal(a.eval('PLAN.B.name'), '背部＋核心');
   assert.equal(a.eval('PLAN.C.name'), '臀腿＋核心');
-  assert(a.eval('TYPES.every(t=>PLAN[t].ex.some(e=>e.core))'));
-  assert(a.eval("PLAN.C.ex.some(e=>e.id==='legpress')&&PLAN.C.ex.some(e=>e.id==='hipthrust')"));
+  assert(a.eval('TYPES.every(t=>dayExercises(t).some(e=>e.core))'));
+  assert(a.eval("dayExercises('C').some(e=>e.id==='legpress')&&dayExercises('C').some(e=>e.id==='hipthrust')"));
 });
 check('new gym plan starts with chest and shoulders and two sets', () => {
   assert.equal(a.eval('suggested()'), 'A');
   assert.equal(a.eval('phase()'), 1);
-  assert.equal(a.eval('setsFor(PLAN.A.ex[0])'), 2);
-  assert.equal(a.eval('setsFor(PLAN.A.ex[4])'), 2);
+  assert.equal(a.eval('setsFor(dayExercises("A")[0])'), 2);
+  assert.equal(a.eval('setsFor(dayExercises("A")[4])'), 2);
 });
 check('all exercise demos and instructions exist', () => {
-  const exercises = a.eval('Object.values(PLAN).flatMap(p=>p.ex)');
-  assert.equal(exercises.length, 16);
+  const exercises = a.eval('Object.values(EXERCISES)');
+  assert.equal(exercises.length, 86);
+  assert.equal(new Set(exercises.map(e=>e.img)).size, 86);
+  assert.deepEqual(Array.from(exercises,e=>e.img).sort(),fs.readdirSync(path.join(root,'assets')).filter(n=>n.endsWith('.gif')).sort());
   for (const e of exercises) {
     assert(fs.existsSync(path.join(root, 'assets', e.img)), e.img);
+    assert(e.parts.length && e.purpose && e.level, e.id);
     for (const key of ['setup', 'cue', 'err', 'next', 'alt']) assert(e[key], e.n + key);
   }
 });
 check('only major exercises gain sets in later phases', () => {
   a.eval('S.gymStart=addDays(TODAY,-28)');
   assert.equal(a.eval('phase()'), 2);
-  assert.equal(a.eval('setsFor(PLAN.A.ex[0])'), 3);
-  assert.equal(a.eval('setsFor(PLAN.A.ex[4])'), 2);
+  assert.equal(a.eval('setsFor(dayExercises("A")[0])'), 3);
+  assert.equal(a.eval('setsFor(dayExercises("A")[4])'), 2);
   a.eval('S.gymPhase3=true');
-  assert.equal(a.eval('setsFor(PLAN.A.ex[0])'), 4);
-  assert.equal(a.eval('setsFor(PLAN.A.ex[4])'), 2);
+  assert.equal(a.eval('setsFor(dayExercises("A")[0])'), 4);
+  assert.equal(a.eval('setsFor(dayExercises("A")[4])'), 2);
 });
 check('next incomplete theme is suggested and next day recommends rest', () => {
   a.eval("S.sessions=[{date:addDays(TODAY,-1),type:'A',plan:GYM}];renderToday()");
@@ -148,5 +152,177 @@ check('old gym records remain readable after exercises move to a different theme
   assert.match(b.eval('reportText()'), /旧健身房方案 A 腿举：40kg/);
   assert.match(b.eval('reportText()'), /旧健身房方案 A/);
   assert.equal(b.eval('weekTypes().size'), 0);
+});
+function choose(b, day, slot, id) {
+  b.node('#weekOptions').handlers.change({target: {
+    dataset: {choiceDay: day, choiceSlot: slot}, value: id,
+    closest: () => ({querySelector: () => b.node('.choice-info')})
+  }});
+}
+check('first visit requires confirming a weekly choice before training', () => {
+  const b = app(null, false);
+  assert.equal(b.eval('weekPlan().confirmed'), false);
+  assert.equal(b.node('#workout').hidden, true);
+  b.node('#finishBtn').handlers.click();
+  assert.equal(b.eval('gymSessions().length'), 0);
+  b.node('#confirmWeek').handlers.click();
+  assert.equal(b.eval('weekPlan().confirmed'), true);
+  assert.equal(b.node('#workout').hidden, false);
+});
+check('selection changes stay in draft until confirmation and survive reload afterward', () => {
+  const b = app();
+  choose(b, 'A', 'push', 'dbbench');
+  assert.equal(b.eval("dayExercises('A')[0].id"), 'chestpress');
+  assert.match(b.node('#weekPlanMsg').textContent, /尚未应用/);
+  b.node('#confirmWeek').handlers.click();
+  assert.equal(b.eval("dayExercises('A')[0].id"), 'dbbench');
+  assert(b.node('#exList').innerHTML.includes('平凳哑铃推胸'));
+  const c = app(b.saved(), false);
+  assert.equal(c.eval("dayExercises('A')[0].id"), 'dbbench');
+  assert.equal(c.eval('weekPlan().confirmed'), true);
+});
+check('new week inherits latest saved choices and asks for confirmation again', () => {
+  const b = app();
+  choose(b, 'B', 'vertical', 'assistedpull');
+  b.node('#confirmWeek').handlers.click();
+  b.eval('TODAY=addDays(mondayOf(TODAY),7);renderAll()');
+  assert.equal(b.eval("weekPlan().choices.B.vertical"), 'assistedpull');
+  assert.equal(b.eval('weekPlan().confirmed'), false);
+  assert.equal(b.node('#workout').hidden, true);
+  b.node('#confirmWeek').handlers.click();
+  assert.equal(b.eval("dayExercises('B')[0].id"), 'assistedpull');
+  assert.equal(b.eval('weekTypes().size'), 0);
+});
+check('already started day keeps its exercise list after changing weekly choices', () => {
+  const b = app();
+  const key = b.eval("recordKey('A','chestpress')");
+  b.events.input({target: {dataset: {record: key}, value: '20kg，12/12'}});
+  choose(b, 'A', 'push', 'dbbench');
+  b.node('#confirmWeek').handlers.click();
+  assert.equal(b.eval("weekPlan().choices.A.push"), 'dbbench');
+  assert.equal(b.eval("dayExercises('A')[0].id"), 'chestpress');
+  assert.equal(b.saved().gymRecords[key], '20kg，12/12');
+  b.eval('TODAY=addDays(TODAY,2);renderAll()');
+  assert.equal(b.eval("dayExercises('A')[0].id"), 'dbbench');
+});
+check('exercise histories stay separate and reports retain old names after a swap', () => {
+  const b = app();
+  const oldKey = b.eval("recordKey('A','chestpress')");
+  b.events.input({target: {dataset: {record: oldKey}, value: '机器 20kg'}});
+  choose(b, 'A', 'push', 'dbbench');
+  b.node('#confirmWeek').handlers.click();
+  b.eval('TODAY=addDays(TODAY,2);renderAll()');
+  assert.equal(b.eval("lastRecord('dbbench')"), '');
+  assert.equal(b.eval("lastRecord('chestpress')"), '机器 20kg');
+  const newKey = b.eval("recordKey('A','dbbench')");
+  b.events.input({target: {dataset: {record: newKey}, value: '单只 5kg'}});
+  assert.match(b.eval('reportText()'), /坐姿推胸：机器 20kg/);
+  assert.match(b.eval('reportText()'), /平凳哑铃推胸：单只 5kg/);
+  assert.match(b.eval('reportText()'), /本周已选动作/);
+});
+check('each listed option fits its category and can generate a complete day', () => {
+  const b = app();
+  for (const t of ['A', 'B', 'C']) {
+    const slots = b.eval(`PLAN.${t}.slots`);
+    for (const slot of slots) for (const id of slot.options) {
+      b.eval('draftChoices=defaultChoices()');
+      choose(b, t, slot.key, id);
+      assert.equal(b.eval('choiceError(draftChoices)'), '', id);
+      b.node('#confirmWeek').handlers.click();
+      b.node('#pick' + t).handlers.click();
+      assert(b.node('#exList').innerHTML.includes(b.eval(`EXERCISES['${id}'].n`)), id);
+    }
+  }
+});
+check('incompatible repeated hip hinges are explained without changing saved choices', () => {
+  const b = app();
+  choose(b, 'C', 'hip', 'kbdeadlift');
+  choose(b, 'C', 'ham', 'rdl');
+  b.node('#confirmWeek').handlers.click();
+  assert.match(b.node('#weekPlanMsg').textContent, /髋铰链/);
+  assert.equal(b.eval('weekPlan().choices.C.hip'), 'hipthrust');
+});
+check('checking a set freezes the started exercise list', () => {
+  const b = app();
+  const key = b.eval("recordKey('A','chestpress')");
+  const dot = {dataset: {k: key, j: '0', rest: '120'}, setAttribute() {}};
+  b.node('#exList').handlers.click({target: {closest: () => dot}});
+  choose(b, 'A', 'push', 'dbbench');
+  b.node('#confirmWeek').handlers.click();
+  assert.equal(b.eval("dayExercises('A')[0].id"), 'chestpress');
+  assert.equal(b.saved().sets[key][0], true);
+});
+check('completed session exports its original exercises after editing weekly choices', () => {
+  const b = app();
+  choose(b, 'A', 'push', 'dbbench');
+  b.node('#confirmWeek').handlers.click();
+  b.node('#finishBtn').handlers.click();
+  choose(b, 'A', 'push', 'chestpress');
+  b.node('#confirmWeek').handlers.click();
+  assert.equal(b.eval("weekPlan().choices.A.push"), 'chestpress');
+  assert.equal(b.eval("dayExercises('A')[0].id"), 'dbbench');
+  assert.match(b.eval('reportText()'), /已完成训练的动作：[\s\S]*胸肩＋核心：平凳哑铃推胸/);
+});
+check('catalog renders all 86 resources without eagerly loading their GIFs', () => {
+  const b = app();
+  b.eval('renderLibrary()');
+  assert.match(b.node('#libraryCounts').textContent, /86\/86/);
+  assert.equal((b.node('#libraryList').innerHTML.match(/class="card library-item"/g)||[]).length, 86);
+  assert(!/<img[^>]*\ssrc=/.test(b.node('#libraryList').innerHTML));
+  assert.match(b.node('#libraryList').innerHTML, /素材文件：zhicheng-shoujianjia.gif/);
+  assert.match(b.node('#libraryList').innerHTML, /四足版不对应/);
+});
+check('catalog search combines body part, purpose and learning requirement filters', () => {
+  const b = app();
+  assert(b.eval("filterLibrary('卧推','胸','力量','需指导').some(e=>e.id==='smithbench')"));
+  assert(b.eval("filterLibrary('','全身','组合','进阶').some(e=>e.id==='boxjump')"));
+  assert.equal(b.eval("filterLibrary('不存在的器械123').length"),0);
+  b.node('#librarySearch').value='不存在的器械123';
+  b.eval('renderLibrary()');
+  assert.match(b.node('#libraryList').innerHTML, /没有匹配素材/);
+  b.node('#clearLibrary').handlers.click();
+  assert.match(b.node('#libraryCounts').textContent, /86\/86/);
+});
+check('reference and combination materials remain available without replacing main exercises', () => {
+  const b = app();
+  assert(b.eval("Object.values(EXERCISES).filter(e=>['组合','心肺','技术练习'].includes(e.purpose)).every(e=>libraryDestinations(e.id).length===0)"));
+  assert(b.eval("TYPES.every(t=>PLAN[t].slots.filter(s=>s.main).every(s=>s.options.every(id=>EXERCISES[id].purpose==='力量')))"));
+  assert.equal(b.eval("libraryDestinations('hipairplane').length"),0);
+  assert.equal(b.eval("libraryDestinations('scapcontrol').length"),0);
+});
+check('catalog choice goes to draft and only reaches training after confirmation', () => {
+  const b = app();
+  assert.equal(b.eval("chooseFromLibrary('barbellrow','B','horizontal')"),true);
+  assert.equal(b.eval('draftChoices.B.horizontal'),'barbellrow');
+  assert.equal(b.eval('weekPlan().choices.B.horizontal'),'row');
+  assert.equal(b.node('#weekChooser').open,true);
+  assert.match(b.node('#weekPlanMsg').textContent,/待选清单/);
+  b.node('#confirmWeek').handlers.click();
+  assert.equal(b.eval('weekPlan().choices.B.horizontal'),'barbellrow');
+  assert(b.eval("dayExercises('B').some(e=>e.id==='barbellrow')"));
+});
+check('catalog cannot insert unrelated or duplicate exercises into a day', () => {
+  const b = app();
+  assert.equal(b.eval("chooseFromLibrary('catcow','A','push')"),false);
+  assert.equal(b.eval("chooseFromLibrary('highrow','B','horizontal')"),true);
+  assert.equal(b.eval("chooseFromLibrary('highrow','B','back')"),false);
+  assert.match(b.node('#libraryNotice').textContent,/重复选择/);
+  assert.equal(b.eval('draftChoices.B.back'),'straightarm');
+});
+check('new hinge variants receive the same duplication check', () => {
+  const b = app();
+  choose(b,'C','hip','landminedeadlift');
+  choose(b,'C','ham','stiffdeadlift');
+  b.node('#confirmWeek').handlers.click();
+  assert.match(b.node('#weekPlanMsg').textContent,/髋铰链/);
+  assert.equal(b.eval('weekPlan().choices.C.hip'),'hipthrust');
+});
+check('two illustration files of the same standing row cannot occupy two slots', () => {
+  const b = app();
+  choose(b,'B','horizontal','vstandingrow');
+  choose(b,'B','back','standingrow');
+  b.node('#confirmWeek').handlers.click();
+  assert.match(b.node('#weekPlanMsg').textContent,/不同示意/);
+  assert.equal(b.eval('weekPlan().choices.B.horizontal'),'row');
 });
 console.log(`${checks} checks passed.`);

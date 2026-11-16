@@ -107,7 +107,7 @@ ul{margin:0;padding-left:1.2em}
 li+li{margin-top:4px}
 
 .tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-.tabs div{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr)}
+.tabs div{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr)}
 .tabs button{border:0;background:transparent;color:var(--muted);font:inherit;font-weight:600;padding:14px 4px;cursor:pointer;border-top:3px solid transparent}
 .tabs button[aria-selected="true"]{color:var(--ink);border-top-color:var(--accent)}
 
@@ -126,6 +126,25 @@ a{color:var(--accent);text-underline-offset:3px}
 .split-week .done{color:var(--accent);border-color:var(--accent)}
 #weeklyPlan{display:flex;flex-direction:column;gap:12px}
 summary{min-height:44px;display:flex;align-items:center}
+
+.week-day{border-top:1px solid var(--line);padding:8px 0}
+.week-day>summary{font-size:15px}
+.choice-row{padding:10px 0;border-top:1px solid var(--line)}
+.choice-row:first-child{border-top:0}
+.choice-row>label{display:flex;flex-direction:column;gap:6px;font-weight:600}
+.choice-row select{box-sizing:border-box;width:100%;min-width:0;min-height:46px;padding:10px 8px;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:8px;font:inherit;font-size:16px}
+.choice-info{padding-top:6px}
+.choice-preview>summary{font-size:13px}
+select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.catalog-filters{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.catalog-filters label{display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--muted);min-width:0}
+.catalog-filters .full{grid-column:1/-1}
+.catalog-filters input,.catalog-filters select{box-sizing:border-box;width:100%;min-width:0;min-height:46px;padding:10px 8px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:8px;font:inherit;font-size:16px}
+.library-item>summary{font-size:16px}
+.catalog-actions{display:flex;flex-direction:column;gap:8px}
+.catalog-actions:empty{display:none}
+.asset-note{padding:8px 10px;background:var(--warn-soft);border-radius:6px}
 @media(max-width:380px){.ex-head{align-items:flex-start;gap:8px}.ex-name{font-size:15px}.ex-dose{font-size:18px}.seg button{font-size:13px}.timer{gap:8px;padding-left:12px}.timer button{padding:10px}.targets .v{font-size:26px}}
 </style>
 
@@ -144,6 +163,19 @@ summary{min-height:44px;display:flex;align-items:center}
   </header>
 
   <section id="today" class="section">
+    <details class="card" id="weekChooser" open>
+      <summary><span id="weekChooserTitle">先选本周动作</span></summary>
+      <div class="stack" style="padding-top:10px">
+        <p class="small muted" id="weekChoiceDates"></p>
+        <p class="small muted">每个类别选一个，三天的部位和训练量由计划配好。默认带入上周选择；可以展开动图再决定。</p>
+        <button class="btn ghost" id="browseLibrary">查看完整动作库</button>
+        <div id="weekOptions"></div>
+        <p class="small muted">标有“先请教练指导”的动作，先学会再使用。修改不会改写已经开始的当天清单和记录。</p>
+        <button class="btn primary wide" id="confirmWeek">选好了，生成本周计划</button>
+        <p class="small muted" id="weekPlanMsg" role="status"></p>
+      </div>
+    </details>
+    <div id="workout" class="section" hidden>
     <div class="stack">
       <div class="row">
         <h2 id="todayTitle">今天练什么</h2>
@@ -156,7 +188,7 @@ summary{min-height:44px;display:flex;align-items:center}
       </div>
       <div id="splitWeek" class="split-week" aria-label="本周三个训练主题"></div>
       <p class="small muted" id="suggest" aria-live="polite"></p>
-      <p class="small muted">1997 年生 · 172cm · 起点 78kg · 体脂参考 24.1%。每周 3 次部位三分化：胸肩、背部、臀腿各一天，每天带少量核心。先力量、后有氧，每次约 60–85 分钟。</p>
+      <p class="small muted">1997 年生 · 172cm · 起点 78kg · 体脂参考 24.1%。每周 3 次部位三分化：胸肩、背部、臀腿各一天，每天带少量核心。先力量、后有氧，每次约 60–90 分钟。</p>
     </div>
 
     <div class="card">
@@ -176,6 +208,7 @@ summary{min-height:44px;display:flex;align-items:center}
 
     <button class="btn primary wide" id="finishBtn">完成今天的训练</button>
     <p class="small muted">例如周一胸肩＋核心、周三背部＋核心、周五臀腿＋核心。训练日之间至少隔一天。可按本周空闲时间调整顺序，每个主题每周一次；漏练不补双份。不练的日子快走 30–40 分钟，疲劳明显时减少时长。</p>
+    </div>
   </section>
 
   <section id="food" class="section" hidden>
@@ -276,7 +309,7 @@ summary{min-height:44px;display:flex;align-items:center}
     <div class="card stack">
       <h2>一周三个训练日</h2>
       <div id="weeklyPlan"></div>
-      <p class="small muted">核心放在每次训练末尾，不单独占一个训练日。胸肩日以推为主；背日以下拉、划船为主；臀腿日把臀桥、腿举、腿弯举、腿屈伸和小腿放在一起。每次先做主要动作，再做辅助和核心。</p>
+      <p class="small muted">核心放在每次训练末尾，不单独占一个训练日。胸肩日保留推胸、肩推等类别；背日保留纵向拉、横向拉；臀腿日覆盖蹲或腿推、髋伸、大腿前后侧。先在训练页选定本周动作，再按清单练；每次先做主要动作，再做辅助和核心。</p>
     </div>
     <div class="card">
       <h2 style="margin-bottom:6px">三个阶段</h2>
@@ -327,6 +360,22 @@ summary{min-height:44px;display:flex;align-items:center}
       <p class="small muted">训练编排参考：<a href="https://pubmed.ncbi.nlm.nih.gov/41843416/" target="_blank" rel="noopener noreferrer">ACSM 2026 抗阻训练立场声明</a>。适用于成年、无已知运动禁忌的初学者；如有伤病，请先按专业评估调整。</p>
     </div>
   </section>
+  <section id="library" class="section" hidden>
+    <div class="stack">
+      <h2>完整动作库</h2>
+      <p class="small muted" id="libraryCounts"></p>
+      <p class="small muted">资源文件夹的全部 GIF 都在这里。按部位、用途和学习要求筛选；可用的动作能加入本周待选清单，确认后再应用。热身、心肺和组合练习保留各自用途。</p>
+      <div class="catalog-filters">
+        <label class="full">搜索动作或器械<input id="librarySearch" type="search" placeholder="例如：卧推、划船、弹力带" autocomplete="off"></label>
+        <label>训练部位<select id="libraryPart"><option value="">全部部位</option></select></label>
+        <label>用途<select id="libraryPurpose"><option value="">全部用途</option></select></label>
+        <label>学习要求<select id="libraryLevel"><option value="">全部要求</option></select></label>
+        <button class="btn ghost" id="clearLibrary">清除筛选</button>
+      </div>
+      <p class="small muted" id="libraryNotice" role="status"></p>
+    </div>
+    <div id="libraryList" class="stack"></div>
+  </section>
 </div>
 
 <div class="timer" id="timer" hidden>
@@ -339,8 +388,10 @@ summary{min-height:44px;display:flex;align-items:center}
   <button role="tab" data-tab="food">饮食</button>
   <button role="tab" data-tab="log">记录</button>
   <button role="tab" data-tab="plan">计划</button>
+  <button role="tab" data-tab="library">动作库</button>
 </div></nav>
 
+<script src="exercises.js"></script>
 <script>
 const BASE={w:78.0,bf:24.1};
 const WARM=[
@@ -351,111 +402,6 @@ const FIN=[
   '跑步机快走、单车或椭圆机 15–20 分钟：呼吸加快，但还能说完整句子；从 10 分钟逐步增加；臀腿日疲劳明显时保持 10 分钟或只做慢走放松',
   '最后慢走 2–3 分钟，再舒适拉伸胸、背、臀腿 3–5 分钟；不追求疼痛感'
 ];
-const PLAN={
-  A:{name:"胸肩＋核心",day:"周一",warm:"肩绕环前后各 10 次，用轻档推胸和肩推试做，确认肩部无不适。",ex:[
-    {id:"chestpress",n:"坐姿推胸",main:true,eq:"推胸机 · 胸、肱三头肌",reps:"10–15",reps3:"8–12",rest:120,img:"zuozi-tuixiong.gif",
-     setup:"沿用 A 日的座椅高度和同台器械；今天肩胸仍明显酸痛、影响动作时先休息。",
-     cue:"背靠垫，手腕平直。呼气推起，控制还原，肩部保持舒适，不耸肩、不大幅拱腰。",
-     err:"为了追 A 日重量而动作变形；肩部刺痛仍继续。",
-     next:"连续两次所有组做到次数上限、动作稳定且仍留 2 次余力，再加最小一档；尽量使用同台器械便于比较。",
-     alt:"可换轻哑铃卧推 10–15 次；重量不能直接照搬推胸机数字。"},
-    {id:"shoulderpress",n:"器械肩推",eq:"肩推机 · 肩、肱三头肌",reps:"10–15",reps3:"10–15",rest:90,img:"qixie-jiantui.gif",main:true,
-     setup:"座椅调到把手约在耳旁、肘部舒适的位置，背靠垫；先用轻档。",
-     cue:"收腹，不后仰，把手沿轨迹平稳推起，慢慢还原到肩部舒适范围；自然呼吸。",
-     err:"腰拱起借力；耸肩；肩痛还硬往下压。",
-     next:"两组都达到次数上限、无痛且不后仰，连续两次训练如此，再加最小一档。",
-     alt:"肩推机被占：坐姿轻哑铃肩推，先请教练检查；若肩部不适，本动作跳过。"},
-    {n:"坐姿夹胸",eq:"夹胸机 · 胸",reps:"12–15",reps3:"12–15",rest:75,img:"zuozi-jiaxiong.gif",id:"pecdeck",
-     setup:"调座椅使把手或肘垫约在胸部高度；背靠垫，起始角度以肩部舒适为准。",
-     cue:"手肘微弯、角度保持，双臂向胸前合拢，停一下再慢慢打开；肩不耸起，不往前探头。",
-     err:"把手退到身后太多；伸脖子；肩前侧刺痛仍继续。",
-     next:"连续两次所有组做满 15 次且肩部舒适，下次加最小一档。",
-     alt:"器械被占时先做后面的动作再回来；不要临时换成不熟悉的重哑铃飞鸟。"},
-    {id:"lateral",n:"哑铃侧平举",eq:"轻哑铃 · 肩中束",reps:"12–15",reps3:"12–15",rest:60,img:"yaling-cepingju.gif",
-     setup:"先选能不耸肩做满下限的轻哑铃；不要求从固定公斤数起步。",
-     cue:"手肘微弯，手臂在身体侧前方抬起，最高不超过肩高；手腕自然，缓慢放下。",
-     err:"耸肩甩起；刻意拇指朝下倒水；从 2kg 直接跳到 5kg。",
-     next:"先把每组次数做稳，再用更小的重量增幅；健身房没有合适重量就先维持，不硬跳档。",
-     alt:"可用侧平举机，先请教练调座椅；肩部疼痛时跳过。"},
-    {id:"deadbug",n:"死虫",eq:"瑜伽垫 · 核心控制",reps:"6–10 每侧",reps3:"8–12 每侧",rest:60,img:"sichong.gif",core:true,
-     setup:"仰卧，髋膝约 90°，双手向上，腰背舒适贴垫。",
-     cue:"呼气收紧腹部，对侧手脚慢慢伸远再收回。腰开始拱起前就停，左右交替，保持呼吸。",
-     err:"腰拱离地；追求手脚伸得远；憋气。",
-     next:"先把每侧次数做稳，再慢慢加大伸展距离；不需要靠加哑铃进阶。",
-     alt:"难以控制时只动腿，或脚跟交替点地。"},
-  ]},
-  B:{name:"背部＋核心",day:"周三",warm:"肩绕环前后各 10 次，用轻档下拉和划船试做，练习躯干稳定、不耸肩。",ex:[
-    {id:"pulldown",n:"高位下拉",main:true,eq:"高位下拉机 · 背、肱二头肌",reps:"10–15",reps3:"8–12",rest:120,img:"gaowei-xiala.gif",
-     setup:"压腿垫固定大腿，脚踩地；握距略宽于肩。够不到横杆时请人递，不跳起来抓。",
-     cue:"躯干只微后倾，肩不耸起，手肘向下带动横杆拉向上胸。慢慢还原，让肩胛自然移动，避免身体来回摆。",
-     err:"拉到脖子后面；猛后仰；只靠手腕往下拽。",
-     next:"连续两次所有组达到上限、躯干不摇晃且留 2 次余力，再加最小一档。",
-     alt:"宽杆不舒服：换中立握窄把下拉，次数不变；仍疼就停下请教练检查。"},
-    {id:"row",n:"坐姿绳索划船",main:true,eq:"低位划船机 · 背、肱二头肌",reps:"10–15",reps3:"8–12",rest:120,img:"zuozi-huachuan.gif",
-     setup:"选中立握把，脚踩踏板、膝微屈；调整位置，起始时能保持背部自然。",
-     cue:"躯干稳定，手肘往身后拉，把手拉向上腹。肩不耸，慢慢放回；肩胛随动作自然前后移动。",
-     err:"后仰甩重量；弯腰够远；手腕内扣。",
-     next:"连续两次所有组做到上限，躯干不摇且留 2 次余力，再加最小一档。",
-     alt:"低位机被占：胸托式器械划船 10–15 次；调座椅，让胸垫支撑躯干。"},
-    {id:"reversefly",n:"器械反向飞鸟",eq:"反向飞鸟机 · 肩后束、上背",reps:"12–15",reps3:"12–15",rest:75,img:"qixie-fanxiang-feiniao.gif",
-     setup:"面对胸垫坐好，座椅调到把手大致与肩同高；先用轻重量，手肘微弯。",
-     cue:"胸贴靠垫，肩膀不耸起，双臂向两侧后方打开到舒适范围，停一下再缓慢收回。",
-     err:"后仰甩动；耸肩；把手拉得过远引起肩前侧不适。",
-     next:"连续两次所有组做满上限、肩部舒适且仍有余力，再加最小一档。",
-     alt:"器械被占先做后面的动作再回来；不要临时换不熟悉的重哑铃飞鸟。"},
-    {id:"straightarm",n:"绳索直臂下压",eq:"高位绳索 · 背阔肌",reps:"12–15",reps3:"12–15",rest:75,img:"zhibi-xiaya.gif",
-     setup:"滑轮调到高位，用直杆或绳把；后退半步，膝微屈、髋稍向后，手肘轻微弯曲并保持。",
-     cue:"收腹、躯干稳定，用背部带动上臂向下，把手压向大腿前侧，再控制还原；不把动作做成屈肘下压。",
-     err:"腰部前后晃动；用手臂猛甩；为压得更低而折腰后仰。",
-     next:"连续两次所有组做到 15 次、躯干稳定且留余力，再小幅加重。",
-     alt:"高位机被占时可先跳过，不额外补重划船；这是补充动作，先保证下拉和划船质量。"},
-    {id:"plank",n:"平板支撑",eq:"瑜伽垫 · 核心稳定",reps:"20–40 秒",reps3:"30–60 秒",rest:60,img:"pingban-zhicheng.gif",core:true,
-     setup:"手肘在肩下，前臂和脚尖撑地；难时可先用膝盖支撑。",
-     cue:"身体大致一条直线，收腹收臀，正常呼吸。腰开始塌或憋气就结束这一组。",
-     err:"塌腰；撅臀；只追求撑得久。",
-     next:"先延长稳定保持时间，到 60 秒后保持质量即可，不必立刻增加复杂变式。",
-     alt:"可改跪姿平板，或换死虫，保持腰背稳定。"},
-  ]},
-  C:{name:"臀腿＋核心",day:"周五",warm:"徒手深蹲 8 次、臀桥 10 次，踝关节活动各 10 次；用轻档腿举、臀桥和腿弯举试做。",ex:[
-    {id:"legpress",n:"腿举",main:true,eq:"腿举机 · 股四头肌、臀",reps:"10–15",reps3:"8–12",rest:120,img:"tuiju.gif",
-     setup:"第一次请巡场教练演示安全挡和解锁方式。背、臀贴靠垫，双脚约肩宽；先用最轻档试做。",
-     cue:"全脚掌踩稳，膝盖朝脚尖方向。缓慢屈膝，只降到臀部仍贴垫的位置，再平稳推起，顶端不猛锁膝。",
-     err:"为了蹲深把臀部卷离靠垫；膝内扣；用手推膝盖帮忙。",
-     next:"连续两次训练所有组都做到上限，仍能再做 2 次且动作稳定，下次加最小一档；若加后做不到下限，就退回。",
-     alt:"没有腿举机：高脚杯深蹲，10–15 次；请教练先检查蹲姿。"},
-    {id:"hipthrust",n:"器械臀桥",main:true,eq:"臀桥机 · 臀、大腿后侧",reps:"10–15",reps3:"8–12",rest:120,img:"qixie-tunqiao.gif",
-     setup:"请巡场教练调整靠背和护垫，护垫放髋部而非腹部；弄清释放手柄和安全挡。",
-     cue:"双脚踩稳，用臀部发力抬髋，至躯干和大腿大致一条线即停；顶端不向后折腰，慢慢下放。",
-     err:"用腰往上顶；脚跟离地；护垫压肚子。",
-     next:"连续两次所有组达到上限、仍留 2 次余力，再加最小一档。",
-     alt:"没有臀桥机：先做地面臀桥 12–15 次，熟练后抱轻哑铃；不独自尝试大重量杠铃臀桥。"},
-    {id:"legcurl",n:"坐姿腿弯举",eq:"腿弯举机 · 大腿后侧",reps:"12–15",reps3:"12–15",rest:75,img:"zuozi-tuiwanju.gif",main:true,
-     setup:"器械转轴与膝关节大致对齐；大腿压垫固定，小腿垫靠近脚踝上方，避开跟腱。",
-     cue:"背靠垫、大腿不动，屈膝把小腿向后下方收，停一下再慢慢还原；全程不弹不甩。",
-     err:"臀部离座；借上身摇动；膝关节被垫子顶得不舒服仍继续。",
-     next:"两组都能稳定做满 15 次，连续两次训练如此，再加最小一档。",
-     alt:"没有坐姿款：请教练指导使用俯卧腿弯举机；不自行改装器械。"},
-    {id:"legextension",n:"坐姿腿屈伸",eq:"腿屈伸机 · 股四头肌",reps:"12–15",reps3:"12–15",rest:75,img:"tui-qushen.gif",
-     setup:"膝关节对准器械转轴，背靠垫；小腿垫靠近脚踝上方，调整到膝部舒适的范围。",
-     cue:"平稳伸膝到舒适接近伸直，停一下，再控制下放；膝盖不猛踢锁死。",
-     err:"甩腿踢起；臀离座；膝痛时仍加重。",
-     next:"两组稳定做满 15 次且无不适，连续两次训练如此，再加最小一档。",
-     alt:"没有器械：轻重量高脚杯深蹲 10–15 次；如果是因为膝痛才换动作，先停下评估。"},
-    {n:"扶稳站姿提踵",eq:"固定扶手、低踏板 · 小腿",reps:"12–20",reps3:"12–20",rest:60,img:"zhanzi-ticong.gif",id:"calfraise",
-     setup:"先徒手，手扶牢固扶手，前脚掌踩稳低踏板；不使用会滑动的凳子。示范中的负重不是起步要求。",
-     cue:"脚踝平稳上提，顶端停一下，慢慢下降到舒适位置；膝自然微屈，不弹不晃。",
-     err:"脚踝向外翻；用弹跳完成；只做很小幅度。",
-     next:"先稳定做满 20 次；连续两次完成后再持轻哑铃，一只手始终扶稳。",
-     alt:"也可用提踵机，请教练调节护垫；不同器械重量不直接比较。"},
-    {n:"卷腹",core:true,eq:"瑜伽垫 · 腹部",reps:"10–15",reps3:"12–20",rest:60,img:"juanfu.gif",id:"crunch",
-     setup:"仰卧屈膝、双脚踩地，手交叉胸前或轻扶头侧。动图示范较难版本，初期在平垫上做。",
-     cue:"呼气把胸廓向骨盆卷起，肩胛略离垫即可，慢慢放回；下背保持舒适贴垫，不做成完整坐起。",
-     err:"用手拉脖子；憋气猛起；借髋部甩动。",
-     next:"先把每次卷起做稳，逐步增加次数；不急着增加负重或换下斜凳。",
-     alt:"颈部不舒服时双手交叉胸前；仍不适可改死虫。"},
-  ]},
-};
-const TYPES=Object.keys(PLAN);
 const HABITS=[
   {k:'p',t:'蛋白质吃够（三餐都有一掌心肉蛋鱼豆）'},
   {k:'s',t:'步数达标'},
@@ -486,6 +432,8 @@ try{S=JSON.parse(localStorage.getItem(KEY));}catch(e){}
 if(!S||S.v!==1)S=fresh();
 if(!S.gymStart)S.gymStart=TODAY;
 if(!S.gymRecords)S.gymRecords={};
+if(!S.weekPlans)S.weekPlans={};
+if(!S.gymDays)S.gymDays={};
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 save();
 
@@ -504,6 +452,156 @@ function lastRecord(id){
   const keys=Object.keys(S.gymRecords).filter(k=>k<TODAY&&k.endsWith('|'+id)).sort();
   return keys.length?S.gymRecords[keys[keys.length-1]]:'';
 }
+const clone=x=>JSON.parse(JSON.stringify(x));
+const defaultChoices=()=>Object.fromEntries(TYPES.map(t=>[t,Object.fromEntries(PLAN[t].slots.map(slot=>[slot.key,slot.options[0]]))]));
+function weekPlan(date=TODAY){
+  const key=mondayOf(date);
+  if(!S.weekPlans[key]){
+    const past=Object.keys(S.weekPlans).filter(k=>k<key).sort();
+    const choices=past.length?S.weekPlans[past[past.length-1]].choices:defaultChoices();
+    S.weekPlans[key]={choices:clone(choices),confirmed:false};save();
+  }
+  return S.weekPlans[key];
+}
+function choiceError(choices){
+  for(const t of TYPES){
+    const ids=PLAN[t].slots.map(slot=>choices[t]&&choices[t][slot.key]);
+    if(PLAN[t].slots.some((slot,i)=>!slot.options.includes(ids[i])))return '每个类别都需要选择一个对应的动作。';
+    if(new Set(ids.map(id=>EXERCISES[id].equivalent||id)).size!==ids.length)return '同一天不能重复选择同一个动作或同动作的不同示意，请换一个。';
+  }
+  if(EXERCISES[choices.C.hip].pattern==='hinge'&&EXERCISES[choices.C.ham].pattern==='hinge')return '这两个动作都是髋铰链，重复度较高：大腿后侧改选腿弯举，或把臀部主动作换成臀桥。';
+  return '';
+}
+const resolveChoices=(t,choices)=>PLAN[t].slots.map(slot=>({id:choices[t][slot.key],main:slot.main}));
+const dayKey=(t,date=TODAY)=>`${date}|${t}`;
+function hasDayActivity(t,date=TODAY){
+  const prefix=`${date}|${GYM}|${t}|`;
+  return S.sessions.some(x=>x.plan===GYM&&x.date===date&&x.type===t)||
+    Object.keys(S.sets).some(k=>k.startsWith(prefix))||Object.keys(S.gymRecords).some(k=>k.startsWith(prefix));
+}
+function dayExercises(t,date=TODAY){
+  const key=dayKey(t,date),wp=weekPlan(date);
+  if(!S.gymDays[key]&&hasDayActivity(t,date)){
+    S.gymDays[key]=resolveChoices(t,wp.confirmed?wp.choices:defaultChoices());save();
+  }
+  const chosen=S.gymDays[key]||resolveChoices(t,wp.choices);
+  return chosen.map(x=>({...EXERCISES[x.id],main:x.main}));
+}
+function freezeDay(t){
+  const key=dayKey(t);
+  if(!S.gymDays[key]){S.gymDays[key]=dayExercises(t).map(e=>({id:e.id,main:e.main}));save();}
+}
+function wireDemos(root){
+  root.querySelectorAll('details.choice-preview, .ex details, details.library-item').forEach(d=>d.addEventListener('toggle',()=>{
+    const img=d.querySelector('img[data-src]');
+    if(d.open&&img){img.src=img.dataset.src;delete img.dataset.src;}
+  }));
+}
+function choiceInfo(id){
+  const e=EXERCISES[id],previous=lastRecord(id);
+  return `<p class="small muted">${escapeHTML(e.eq)}${previous?`<br>上次记录：${escapeHTML(previous)}`:''}</p>${e.note?`<p class="small asset-note">${escapeHTML(e.note)}</p>`:''}
+    <details class="choice-preview"><summary>看这个动作的示范</summary><div class="cue">
+      <img class="demo" data-src="assets/${e.img}" alt="${e.n}动作示范" width="360" height="270">
+      <p>${escapeHTML(e.setup)}</p><p>${escapeHTML(e.cue)}</p>
+    </div></details>`;
+}
+let draftWeek=null,draftChoices=null;
+function renderWeekChooser(){
+  const key=mondayOf(TODAY),wp=weekPlan();
+  if(draftWeek!==key){draftWeek=key;draftChoices=clone(wp.choices);}
+  $('#weekChooserTitle').textContent=wp.confirmed?'本周动作已选好 · 点这里修改':'先选本周动作';
+  const count=new Set(TYPES.flatMap(t=>PLAN[t].slots.flatMap(slot=>slot.options))).size;
+  $('#weekChoiceDates').textContent=`${md(key)}—${md(addDays(key,6))} · 完整库 ${Object.keys(EXERCISES).length} 份素材，其中 ${count} 项可按类别选入周计划`;
+  $('#weekChooser').open=!wp.confirmed;
+  $('#weekOptions').innerHTML=TYPES.map(t=>`<details class="week-day" ${t===curType()?'open':''}>
+    <summary>${PLAN[t].day}：${PLAN[t].name}（${PLAN[t].slots.length} 项）</summary><div class="stack">
+      ${PLAN[t].slots.map(slot=>{
+        const id=draftChoices[t][slot.key];
+        return `<div class="choice-row"><label for="choose-${t}-${slot.key}">${slot.label}${slot.main?' · 主要动作':''}
+          <select id="choose-${t}-${slot.key}" data-choice-day="${t}" data-choice-slot="${slot.key}">
+            ${slot.options.map(k=>`<option value="${k}" ${k===id?'selected':''}>${EXERCISES[k].n}${EXERCISES[k].level==='进阶'?'（进阶，先由教练带练）':EXERCISES[k].coached?'（先请教练指导）':''}</option>`).join('')}
+          </select></label><div class="choice-info">${choiceInfo(id)}</div></div>`;
+      }).join('')}
+    </div></details>`).join('');
+  $('#confirmWeek').textContent=wp.confirmed?'应用本周选择':'选好了，生成本周计划';
+  $('#weekPlanMsg').textContent=wp.confirmed?'本周计划已生成。已开始训练的当天清单保持原样。':'选好后点按钮，生成这周的三天训练清单。';
+  wireDemos($('#weekOptions'));
+}
+$('#weekOptions').addEventListener('change',e=>{
+  const t=e.target.dataset.choiceDay,key=e.target.dataset.choiceSlot;
+  if(!t||!key)return;
+  const slot=PLAN[t].slots.find(x=>x.key===key);
+  if(!slot.options.includes(e.target.value))return;
+  draftChoices[t][key]=e.target.value;
+  const info=e.target.closest('.choice-row').querySelector('.choice-info');
+  info.innerHTML=choiceInfo(e.target.value);wireDemos(info);
+  $('#weekPlanMsg').textContent='选择尚未应用，选好后点按钮确认。';
+});
+$('#confirmWeek').addEventListener('click',()=>{
+  const error=choiceError(draftChoices);
+  if(error){$('#weekPlanMsg').textContent=error;return;}
+  TYPES.forEach(t=>{if(hasDayActivity(t))freezeDay(t);});
+  const wp=weekPlan();wp.choices=clone(draftChoices);wp.confirmed=true;
+  save();stopRest();renderAll();window.scrollTo(0,0);
+});
+
+function libraryDestinations(id){
+  return TYPES.flatMap(t=>PLAN[t].slots.filter(slot=>slot.options.includes(id)).map(slot=>({type:t,key:slot.key,label:`${PLAN[t].name}：${slot.label}`})));
+}
+function filterLibrary(query='',part='',purpose='',level=''){
+  const term=query.trim().toLowerCase();
+  return Object.values(EXERCISES).filter(e=>(!part||e.parts.includes(part))&&(!purpose||e.purpose===purpose)&&(!level||e.level===level)&&
+    (!term||[e.n,e.sourceName||'',e.eq,e.img,...e.parts,e.purpose].join(' ').toLowerCase().includes(term)));
+}
+function renderLibrary(){
+  const entries=filterLibrary($('#librarySearch').value,$('#libraryPart').value,$('#libraryPurpose').value,$('#libraryLevel').value);
+  const total=Object.keys(EXERCISES).length,candidates=new Set(TYPES.flatMap(t=>PLAN[t].slots.flatMap(slot=>slot.options))).size;
+  $('#libraryCounts').textContent=`显示 ${entries.length}/${total} 份素材 · ${candidates} 项可加入周计划，${total-candidates} 项为其他用途或示意参考`;
+  $('#libraryList').innerHTML=entries.length?entries.map(e=>{
+    const destinations=libraryDestinations(e.id);
+    const usage=destinations.length?'可加入的训练类别：'+destinations.map(x=>x.label).join('；'):
+      e.selectionNote||`用于${e.purpose}参考，不直接替代三分化主训练动作。`;
+    return `<details class="card library-item"><summary><span>${escapeHTML(e.n)}</span></summary><div class="cue">
+      <p class="small muted">${e.parts.join('、')} · ${e.purpose} · ${e.level==='需指导'?'先请教练指导':e.level==='进阶'?'进阶，先由教练带练':'基础'}</p>
+      ${e.note?`<p class="small asset-note">${escapeHTML(e.note)}</p>`:''}
+      <img class="demo" data-src="assets/${e.img}" alt="${escapeHTML(e.n)}示范" width="360" height="270">
+      <p><b>器械与准备：</b>${escapeHTML(e.setup)}</p><p><b>动作要点：</b>${escapeHTML(e.cue)}</p>
+      <p><b>注意：</b>${escapeHTML(e.err)}</p><p><b>如何进阶：</b>${escapeHTML(e.next)}</p>
+      <p class="small muted">${escapeHTML(usage)}</p>
+      <div class="catalog-actions">${destinations.map(x=>`<button class="btn ghost small" data-library-choice="${e.id}" data-day="${x.type}" data-slot="${x.key}">选作${x.label}</button>`).join('')}</div>
+      <p class="small muted">素材文件：${e.img}${e.sourceName?`<br>手册名称：${escapeHTML(e.sourceName)}`:''}</p>
+    </div></details>`;
+  }).join(''):'<p class="empty">没有匹配素材，换个关键词或清除筛选。</p>';
+  wireDemos($('#libraryList'));
+}
+function chooseFromLibrary(id,t,key){
+  const slot=PLAN[t].slots.find(x=>x.key===key);
+  if(!slot||!slot.options.includes(id))return false;
+  const candidate=clone(draftChoices);candidate[t][key]=id;
+  const error=choiceError(candidate);
+  if(error){$('#libraryNotice').textContent=error;return false;}
+  draftChoices=candidate;renderWeekChooser();$('#weekChooser').open=true;
+  $('#weekPlanMsg').textContent=`已将“${EXERCISES[id].n}”加入待选清单，确认后才会应用。`;
+  $('#libraryNotice').textContent='';show('today');return true;
+}
+$('#libraryList').addEventListener('click',e=>{
+  const b=e.target.closest('[data-library-choice]');
+  if(b)chooseFromLibrary(b.dataset.libraryChoice,b.dataset.day,b.dataset.slot);
+});
+['librarySearch','libraryPart','libraryPurpose','libraryLevel'].forEach(id=>$('#'+id).addEventListener(id==='librarySearch'?'input':'change',renderLibrary));
+$('#clearLibrary').addEventListener('click',()=>{
+  ['librarySearch','libraryPart','libraryPurpose','libraryLevel'].forEach(id=>$('#'+id).value='');
+  $('#libraryNotice').textContent='';renderLibrary();
+});
+$('#browseLibrary').addEventListener('click',()=>show('library'));
+function initLibraryFilters(){
+  [['libraryPart','全部部位',Object.values(EXERCISES).flatMap(e=>e.parts)],
+   ['libraryPurpose','全部用途',Object.values(EXERCISES).map(e=>e.purpose)],
+   ['libraryLevel','全部要求',Object.values(EXERCISES).map(e=>e.level)]].forEach(([id,label,values])=>{
+    $('#'+id).innerHTML=`<option value="">${label}</option>`+[...new Set(values)].map(x=>`<option value="${x}">${x==='需指导'?'先请教练指导':x}</option>`).join('');
+  });
+}
+
 function restReason(t=curType()){
   if(S.gymStart>TODAY)return '还没到开始日期。今天可先认器械，等开始日再记录正式训练。';
   if(S.sessions.some(x=>x.date===TODAY&&x.plan!==GYM))return '今天已记录旧计划训练，先休息，三分化从下次开始。';
@@ -536,7 +634,8 @@ function checkRow(key,text){
   return `<label class="check"><input type="checkbox" data-k="${key}" ${on?'checked':''}><span>${text}</span></label>`;
 }
 function renderToday(){
-  const t=curType(),p=phase();
+  const t=curType(),p=phase(),confirmed=weekPlan().confirmed;
+  $('#workout').hidden=!confirmed;
   TYPES.forEach(type=>$('#pick'+type).setAttribute('aria-pressed',t===type));
   const completed=weekTypes();
   $('#weekCount').textContent=`本周 ${completed.size}/3 个主题`;
@@ -546,7 +645,7 @@ function renderToday(){
   $('#suggest').textContent=done?`今天已完成${PLAN[done.type].name}，明天休息走路。`:rest||`本次练${PLAN[t].name}。${p===1?'每个动作 2 组。':`主要动作 ${p===2?3:4} 组，辅助和核心 2 组。`}`;
   $('#warm').innerHTML=[WARM[0],PLAN[t].warm,WARM[1]].map((w,i)=>checkRow(`${TODAY}|${GYM}|${t}|w${i}`,w)).join('');
   $('#fin').innerHTML=FIN.map((w,i)=>checkRow(`${TODAY}|${GYM}|${t}|f${i}`,w)).join('');
-  $('#exList').innerHTML=PLAN[t].ex.map(e=>{
+  $('#exList').innerHTML=dayExercises(t).map(e=>{
     const key=recordKey(t,e.id),n=setsFor(e);const arr=S.sets[key]||[];
     const dots=Array.from({length:n},(_,j)=>`<button class="dot" data-k="${key}" data-j="${j}" data-rest="${e.rest}" aria-pressed="${!!arr[j]}" aria-label="第${j+1}组">${j+1}</button>`).join('');
     return `<div class="ex">
@@ -555,38 +654,37 @@ function renderToday(){
       <div class="dots">${dots}</div>
       <details><summary>看动图与动作要点</summary><div class="cue">
         <img class="demo" data-src="assets/${e.img}" alt="${e.n}动作示范" width="360" height="270">
-        <p><b>先调器械：</b>${e.setup}</p>
-        <p><b>怎么做：</b>${e.cue}</p><p><b>常见错误：</b>${e.err}</p><p><b>怎么进阶：</b>${e.next}</p><p><b>器械被占或没有：</b>${e.alt}</p>
+        <p><b>先调器械：</b>${escapeHTML(e.setup)}</p>
+        <p><b>怎么做：</b>${escapeHTML(e.cue)}</p><p><b>常见错误：</b>${escapeHTML(e.err)}</p><p><b>怎么进阶：</b>${escapeHTML(e.next)}</p><p><b>器械被占或没有：</b>${escapeHTML(e.alt)}</p>
+        ${e.note?`<p class="small asset-note">${escapeHTML(e.note)}</p>`:''}
         <p class="small muted">示范沿用训练手册素材。器械外形和调节方式可能不同，按现场标牌并请巡场教练确认。</p>
       </div></details>
       <label class="training-record small muted">本次重量 / 次数 / 座椅档位
-        <input data-record="${key}" value="${escapeHTML(S.gymRecords[key]||'')}" placeholder="${escapeHTML(lastRecord(e.id)?'上次：'+lastRecord(e.id):e.id==='plank'?'例如：30 / 30 秒':e.core?'例如：每侧 8 / 8 次':'例如：20kg，12/12 次，座椅 3')}" maxlength="120" autocomplete="off">
+        <input data-record="${key}" value="${escapeHTML(S.gymRecords[key]||'')}" placeholder="${escapeHTML(lastRecord(e.id)?'上次：'+lastRecord(e.id):e.id==='plank'?'例如：30 / 30 秒':e.reps.includes('每侧')?'例如：每侧 8 / 8 次':e.core?'例如：12 / 12 次':'例如：20kg，12/12 次，座椅 3')}" maxlength="120" autocomplete="off">
       </label></div>`;
   }).join('');
   const fb=$('#finishBtn');
   fb.textContent=done?'撤销今天的完成记录':`完成${PLAN[t].name}`;
   fb.className=done?'btn ghost wide':'btn primary wide';
-  fb.disabled=!done&&!!rest;
+  fb.disabled=!confirmed||(!done&&!!rest);
   if(!done&&rest)fb.textContent='今天先休息';
-  $('#exList').querySelectorAll('details').forEach(d=>d.addEventListener('toggle',()=>{
-    const img=d.querySelector('img[data-src]');
-    if(d.open&&img){img.src=img.dataset.src;delete img.dataset.src;}
-  }));
+  wireDemos($('#exList'));
 }
 
 document.addEventListener('input',e=>{
   const key=e.target.dataset&&e.target.dataset.record;
-  if(key){S.gymRecords[key]=e.target.value;save();}
+  if(key&&weekPlan().confirmed){freezeDay(key.split('|')[2]);S.gymRecords[key]=e.target.value;save();}
 });
 
 document.addEventListener('change',e=>{
   const k=e.target.dataset&&e.target.dataset.k;
-  if(k&&e.target.type==='checkbox'){S.sets[k]=e.target.checked;save();}
+  if(k&&e.target.type==='checkbox'&&weekPlan().confirmed){freezeDay(k.split('|')[2]);S.sets[k]=e.target.checked;save();}
   const h=e.target.dataset&&e.target.dataset.h;
   if(h){S.habits[TODAY]=S.habits[TODAY]||{};S.habits[TODAY][h]=e.target.checked;save();renderHabitWeek();}
 });
 $('#exList').addEventListener('click',e=>{
-  const b=e.target.closest('.dot');if(!b)return;
+  const b=e.target.closest('.dot');if(!b||!weekPlan().confirmed)return;
+  freezeDay(b.dataset.k.split('|')[2]);
   const k=b.dataset.k,j=+b.dataset.j;
   const arr=S.sets[k]||[];arr[j]=!arr[j];S.sets[k]=arr;save();
   b.setAttribute('aria-pressed',!!arr[j]);
@@ -596,7 +694,7 @@ TYPES.forEach(t=>$('#pick'+t).addEventListener('click',()=>{S.gymPick={date:TODA
 $('#finishBtn').addEventListener('click',()=>{
   const done=gymDone();
   if(done)S.sessions=S.sessions.filter(x=>!(x.date===TODAY&&x.plan===GYM));
-  else if(!restReason())S.sessions.push({date:TODAY,type:curType(),plan:GYM});
+  else if(weekPlan().confirmed&&!restReason()){freezeDay(curType());S.sessions.push({date:TODAY,type:curType(),plan:GYM});}
   save();renderToday();
 });
 
@@ -709,7 +807,9 @@ function reportText(){
     '近两周体重腰围：',...(L.length?L.map(x=>`${md(x.d)}  ${x.w?x.w.toFixed(1)+'kg':''}${x.waist?'  腰'+x.waist:''}`):['（没记）']),
     `近两周训练 ${ss.length} 次：${ss.map(x=>md(x.date)+sessionName(x)).join('、')||'无'}`,
     `近7天打卡：${hab.join('，')}`,
-    '近两周器械记录：',...Object.entries(S.gymRecords).filter(([k,v])=>k.slice(0,10)>=from&&k.slice(0,10)<=TODAY&&v).sort(([a],[b])=>a.localeCompare(b)).map(([k,v])=>{const [d,version,t,id]=k.split('|');const ex=Object.values(PLAN).flatMap(p=>p.ex).find(e=>e.id===id);const label=version===GYM?PLAN[t].name:'旧健身房方案 '+t;return `${md(d)} ${label} ${ex?ex.n:id}：${v}`})].join('\n');
+    '已完成训练的动作：',...ss.filter(x=>x.plan===GYM).map(x=>`${md(x.date)} ${PLAN[x.type].name}：${(S.gymDays[dayKey(x.type,x.date)]||resolveChoices(x.type,defaultChoices())).map(e=>EXERCISES[e.id].n).join('、')}`),
+    ...(weekPlan().confirmed?['本周已选动作：',...TYPES.map(t=>`${PLAN[t].name}：${resolveChoices(t,weekPlan().choices).map(e=>EXERCISES[e.id].n).join('、')}`)]:[]),
+    '近两周器械记录：',...Object.entries(S.gymRecords).filter(([k,v])=>k.slice(0,10)>=from&&k.slice(0,10)<=TODAY&&v).sort(([a],[b])=>a.localeCompare(b)).map(([k,v])=>{const [d,version,t,id]=k.split('|');const ex=EXERCISES[id];const label=version===GYM?PLAN[t].name:'旧健身房方案 '+t;return `${md(d)} ${label} ${ex?ex.n:id}：${v}`})].join('\n');
 }
 $('#copyBtn').addEventListener('click',()=>{
   const txt=reportText(),box=$('#copyBox'),b=$('#copyBtn');
@@ -720,7 +820,7 @@ $('#copyBtn').addEventListener('click',()=>{
 
 function renderPlan(){
   const p=phase();
-  $('#weeklyPlan').innerHTML=TYPES.map(t=>`<p><b>${PLAN[t].day}：${PLAN[t].name}</b><br><span class="small muted">${PLAN[t].ex.map(e=>e.n).join('、')}</span></p>`).join('');
+  $('#weeklyPlan').innerHTML=TYPES.map(t=>`<p><b>${PLAN[t].day}：${PLAN[t].name}</b><br><span class="small muted">${dayExercises(t).map(e=>e.n).join('、')}</span></p>`).join('');
   $('#phases').innerHTML=PHASES.map((x,i)=>`<div class="phase${p===i+1?' on':''}"><span class="n">${i+1}</span><div class="stack" style="gap:6px">
     <div class="row"><h3>${x.t}</h3><span class="small muted">${x.when}${p===i+1?' · 现在':''}</span></div>
     <ul class="small">${x.items.map(t=>`<li>${t}</li>`).join('')}</ul>
@@ -736,8 +836,9 @@ $('#phaseBtn').addEventListener('click',()=>{
   delete b.dataset.armed;S.gymPhase3=!S.gymPhase3;save();renderAll();
 });
 
-const TABS=['today','food','log','plan'];
+const TABS=['today','food','log','plan','library'];
 function show(tab){
+  if(tab==='library')renderLibrary();
   TABS.forEach(t=>{$('#'+t).hidden=t!==tab});
   document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===tab));
   try{history.replaceState(null,'','#'+tab)}catch(e){}
@@ -745,8 +846,8 @@ function show(tab){
 }
 document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>show(b.dataset.tab)));
 
-function renderAll(){renderHeader();renderToday();renderFood();renderLog();renderPlan()}
-renderAll();
+function renderAll(){renderHeader();renderWeekChooser();renderToday();renderFood();renderLog();renderPlan()}
+initLibraryFilters();renderAll();
 const h=location.hash.slice(1);show(TABS.includes(h)?h:'today');
 function syncDay(){
   const now=ymd(new Date());if(now===TODAY)return;
