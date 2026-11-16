@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
-<title>居家减脂增肌本</title>
+<title>健身房减脂增肌本</title>
 <style>
 /* Layout: 手机优先单栏训练本；顶部阶段带，内容分四页，底部固定标签栏 */
 :root{
@@ -115,6 +115,18 @@ li+li{margin-top:4px}
 .timer .num{font-size:26px;font-weight:700}
 .timer button{border:0;border-radius:99px;padding:8px 14px;background:var(--bg);color:var(--ink);font:inherit;font-weight:600;cursor:pointer}
 @media (prefers-reduced-motion: no-preference){.dot,.seg button,.tabs button{transition:background .15s,color .15s,border-color .15s}}
+
+.demo{display:block;width:100%;max-width:360px;height:auto;aspect-ratio:4/3;object-fit:contain;background:#fff;border-radius:8px;align-self:center}
+.training-record{display:flex;flex-direction:column;gap:6px}
+.training-record input{box-sizing:border-box;width:100%;min-width:0;font:inherit;font-size:16px;color:var(--ink);background:var(--bg);padding:10px;border:1px solid var(--line);border-radius:8px}
+button:disabled{opacity:.65;cursor:default}
+a{color:var(--accent);text-underline-offset:3px}
+.split-week{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;font-size:12px;color:var(--muted)}
+.split-week>div{display:flex;flex-direction:column;gap:2px;text-align:center;border-bottom:2px solid var(--line);padding:6px 0}
+.split-week .done{color:var(--accent);border-color:var(--accent)}
+#weeklyPlan{display:flex;flex-direction:column;gap:12px}
+summary{min-height:44px;display:flex;align-items:center}
+@media(max-width:380px){.ex-head{align-items:flex-start;gap:8px}.ex-name{font-size:15px}.ex-dose{font-size:18px}.seg button{font-size:13px}.timer{gap:8px;padding-left:12px}.timer button{padding:10px}.targets .v{font-size:26px}}
 </style>
 
 </head>
@@ -122,7 +134,7 @@ li+li{margin-top:4px}
 <div class="wrap">
   <header class="top">
     <div>
-      <div class="label">训练周</div>
+      <div class="label">健身房训练周</div>
       <div class="wk" id="wk">1<small>周</small></div>
     </div>
     <div class="ph stack" style="gap:4px;align-items:flex-end">
@@ -138,14 +150,17 @@ li+li{margin-top:4px}
         <span class="small muted num" id="weekCount">本周 0/3</span>
       </div>
       <div class="seg" role="group" aria-label="选择训练">
-        <button id="pickA" data-t="A">训练 A · 下肢+推</button>
-        <button id="pickB" data-t="B">训练 B · 拉+手臂</button>
+        <button id="pickA" data-t="A">胸肩＋核心</button>
+        <button id="pickB" data-t="B">背部＋核心</button>
+        <button id="pickC" data-t="C">臀腿＋核心</button>
       </div>
-      <p class="small muted" id="suggest"></p>
+      <div id="splitWeek" class="split-week" aria-label="本周三个训练主题"></div>
+      <p class="small muted" id="suggest" aria-live="polite"></p>
+      <p class="small muted">1997 年生 · 172cm · 起点 78kg · 体脂参考 24.1%。每周 3 次部位三分化：胸肩、背部、臀腿各一天，每天带少量核心。先力量、后有氧，每次约 60–85 分钟。</p>
     </div>
 
     <div class="card">
-      <div class="row" style="margin-bottom:4px"><h3>热身 10 分钟</h3><span class="small muted">不热身容易伤腰膝</span></div>
+      <div class="row" style="margin-bottom:4px"><h3>热身 10 分钟</h3><span class="small muted">先活动，再用轻重量试做</span></div>
       <div id="warm"></div>
     </div>
 
@@ -155,12 +170,12 @@ li+li{margin-top:4px}
     </div>
 
     <div class="card">
-      <div class="row" style="margin-bottom:4px"><h3>收尾燃脂 + 拉伸</h3><span class="small muted">约 20 分钟</span></div>
+      <div class="row" style="margin-bottom:4px"><h3>有氧 + 放松</h3><span class="small muted">约 20–25 分钟</span></div>
       <div id="fin"></div>
     </div>
 
     <button class="btn primary wide" id="finishBtn">完成今天的训练</button>
-    <p class="small muted">一周练 3 天，隔天练（比如一三五或二四六），A 和 B 轮流做。不练的日子快走 30–40 分钟，凑够步数。</p>
+    <p class="small muted">例如周一胸肩＋核心、周三背部＋核心、周五臀腿＋核心。训练日之间至少隔一天。可按本周空闲时间调整顺序，每个主题每周一次；漏练不补双份。不练的日子快走 30–40 分钟，疲劳明显时减少时长。</p>
   </section>
 
   <section id="food" class="section" hidden>
@@ -258,24 +273,31 @@ li+li{margin-top:4px}
   </section>
 
   <section id="plan" class="section" hidden>
+    <div class="card stack">
+      <h2>一周三个训练日</h2>
+      <div id="weeklyPlan"></div>
+      <p class="small muted">核心放在每次训练末尾，不单独占一个训练日。胸肩日以推为主；背日以下拉、划船为主；臀腿日把臀桥、腿举、腿弯举、腿屈伸和小腿放在一起。每次先做主要动作，再做辅助和核心。</p>
+    </div>
     <div class="card">
       <h2 style="margin-bottom:6px">三个阶段</h2>
       <div id="phases"></div>
     </div>
 
     <div class="card stack">
-      <h3>什么时候加难度</h3>
-      <p>每个动作都有次数范围，比如 12–15 次。所有组都能做满上限、动作还标准，下次就升级：先放慢下放到 3 秒，再换更难的版本（每个动作的“怎么进阶”里写了）。</p>
-      <div class="note"><b>什么时候买重哑铃：</b>5kg 高脚杯深蹲或单臂划船能轻松做满 3 组 20 次，就该买一对可调哑铃了，单只能调到 15–20kg 就够用。按新手进度一般在第 4–6 周。</div>
+      <h3>第一次去健身房</h3>
+      <p>先请巡场教练带你认腿举、推胸、下拉、划船和臀桥机，演示座椅、护垫、配重插销、安全挡和紧急停止。不同品牌器械的调节方法不同，动图只帮助认动作。</p>
+      <p>从很轻的档位试做 10 次。动作稳定、最后还能再做 2–3 次，就是适合的起步重量。感觉太轻才小幅增加；不测试最大重量，不照抄别人的公斤数。</p>
+      <p>动作下方可直接填写器械名称、座椅档位、重量和实际次数。同一个数字在不同器械上不代表同样难度；哑铃写单只重量，机器写标牌显示值和单位。</p>
+      <div class="note"><b>什么时候加重量：</b>连续两次练这个动作，所有正式组都达到次数上限，动作稳定且仍能再做约 2 次，下次才加最小一档。加后低于次数下限或动作变形，就退回。辅助动作和核心不用跟着主要动作加组。</div>
     </div>
 
     <div class="card stack">
       <h3>每周日看一次，按这个调</h3>
       <ul>
         <li>周平均体重每周掉 0.4–0.6kg：吃法不变</li>
-        <li>连续两周掉不到 0.2kg：每天少吃 150 大卡（主食少半拳），或每天多走 2000 步</li>
-        <li>一周掉超过 1kg（第一二周除外，那是掉水分）：每天多吃半拳主食</li>
-        <li>腰围在降、体重不动：说明在长肌肉掉脂肪，继续</li>
+        <li>连续两个周变化都掉不到 0.2kg，腰围也没下降：先核对饮食和活动执行，再每天少吃约 100–150 大卡或多走 1000–2000 步，选一项调整</li>
+        <li>一周掉超过 1kg（起初两周可能有较多水分变化）：复查称重条件和恢复情况，必要时增加摄入</li>
+        <li>腰围在降、体重不动：可能仍在改善体成分，先继续观察，不急着减吃</li>
       </ul>
     </div>
 
@@ -287,9 +309,9 @@ li+li{margin-top:4px}
     <div class="card stack">
       <h3>注意安全</h3>
       <ul>
-        <li>健腹轮从跪姿开始，只滚到腰不塌的位置。练完腰酸说明滚太远了，下次缩短距离</li>
+        <li>腿举、臀桥等器械先学会安全挡和调节方式；第一次使用请巡场教练检查，不自行尝试陌生的大重量杠铃动作</li>
         <li>刚开始练，肌肉酸两三天是正常的；关节疼不正常，换动作或停下</li>
-        <li>头晕、胸闷、心慌立刻停</li>
+        <li>头晕、胸闷、胸痛、心慌立刻停止训练；症状持续或明显时及时就医</li>
         <li>肚子和胳膊会随着全身减脂一起瘦，没法只瘦一个地方。练手臂是为了瘦下来以后线条好看</li>
       </ul>
     </div>
@@ -297,10 +319,12 @@ li+li{margin-top:4px}
     <div class="card stack">
       <h3>设置</h3>
       <div class="form">
-        <label class="full">开始训练的日期<input type="date" id="startDate"></label>
+        <label class="full">开始健身房训练的日期<input type="date" id="startDate"></label>
       </div>
-      <button class="btn" id="phaseBtn">体脂达标了，切换到增肌期</button>
-      <p class="small muted">记录只保存在这台手机的浏览器里。换手机或清浏览器数据会丢，所以隔一阵复制一次记录发出去留底。</p>
+      <button class="btn" id="phaseBtn">减脂阶段结束，切换到增肌期</button>
+      <p class="small muted">请固定用手机同一个 Safari 或 Chrome 浏览器打开，避免微信内置浏览器。记录只保存在本机；换手机或清浏览器数据会丢，每两周复制一次记录发给家人留底。原有体重、腰围和居家记录会保留。健身房周数从首次打开本版的日期起算，请改成实际开练日。</p>
+      <p class="small muted">网页需联网打开；已打开的页面可继续打卡，但重新打开、刷新和首次加载动图需要网络。动图来自原训练手册，来源为 fitnessprogramer.com。</p>
+      <p class="small muted">训练编排参考：<a href="https://pubmed.ncbi.nlm.nih.gov/41843416/" target="_blank" rel="noopener noreferrer">ACSM 2026 抗阻训练立场声明</a>。适用于成年、无已知运动禁忌的初学者；如有伤病，请先按专业评估调整。</p>
     </div>
   </section>
 </div>
@@ -320,78 +344,118 @@ li+li{margin-top:4px}
 <script>
 const BASE={w:78.0,bf:24.1};
 const WARM=[
-  '原地踏步或开合（不跳，左右交替迈步）3 分钟',
-  '猫牛式 8 次 + 手臂大绕环前后各 10 次',
-  '弓步转体（世界最伟大拉伸）每边 5 次',
-  '徒手深蹲 10 次 + 臀桥 10 次'
+  '跑步机平地快走或单车 5 分钟：身体微热，仍能说完整句子',
+  '主要动作先用轻重量试做 1–2 组，每组 8–10 次；这些不计入正式组'
 ];
 const FIN=[
-  '低冲击循环 4 轮：原地高抬腿 30 秒 → 交替侧步开合 30 秒 → 慢速登山跑 30 秒 → 休息 30 秒',
-  '快走或爬楼梯 10 分钟（时间够就做）',
-  '拉伸 5 分钟：胸、大腿前后侧、臀部、背，每个 30 秒'
+  '跑步机快走、单车或椭圆机 15–20 分钟：呼吸加快，但还能说完整句子；从 10 分钟逐步增加；臀腿日疲劳明显时保持 10 分钟或只做慢走放松',
+  '最后慢走 2–3 分钟，再舒适拉伸胸、背、臀腿 3–5 分钟；不追求疼痛感'
 ];
 const PLAN={
-  A:{name:'训练 A · 下肢+推',ex:[
-    {n:'高脚杯深蹲',eq:'5kg 哑铃竖着抱在胸前',reps:'12–15',reps3:'8–12',rest:75,
-     cue:'脚比肩稍宽、脚尖微外八。屁股往后下方坐，膝盖跟脚尖同一个方向，蹲到大腿接近水平，脚跟不离地。',
-     err:'膝盖往里扣；弯腰低头；只蹲一半。',
-     next:'3 组都能做满 15 次：每次下蹲数 3 秒 → 1.5 次深蹲（蹲到底起一半再蹲下去算一次）→ 换重哑铃'},
-    {n:'俯卧撑',eq:'手撑床沿或桌边（上斜）',reps:'8–12',reps3:'8–12',rest:75,
-     cue:'身体从头到脚一条直线，手比肩稍宽，下去时手肘往身后约 45°，胸口快碰到边沿再推起。',
-     err:'塌腰、撅屁股；手肘向两边张开成 90°。',
-     next:'手撑的位置越来越低：桌边 → 床沿 → 矮凳 → 地面跪姿 → 标准俯卧撑'},
-    {n:'单臂哑铃划船',eq:'5kg，一手一膝撑在床或凳上',reps:'12–15 每侧',reps3:'10–12 每侧',rest:60,
-     cue:'背平，像锯木头一样把哑铃拉到腰侧，顶端停 1 秒感觉后背在用力，慢慢放下。',
-     err:'用胳膊甩；耸肩；身体扭来扭去。',
-     next:'做满后：顶端停 2 秒、下放 3 秒 → 换重哑铃'},
-    {n:'哑铃坐姿推举',eq:'5kg × 2，坐在椅子上背挺直',reps:'10–12',reps3:'8–12',rest:60,
-     cue:'哑铃从耳朵旁边推到头顶，手臂伸直但别锁死，收紧肚子别后仰。',
-     err:'腰往后仰借力；推得太快。',
-     next:'做满后换站姿，再之后换重哑铃'},
-    {n:'臀桥',eq:'躺在地上，可以抱 5kg 哑铃放胯上',reps:'15',reps3:'12–15',rest:45,
-     cue:'脚跟靠近屁股，用屁股把胯顶起来，顶端夹紧停 2 秒。',
-     err:'用腰拱起来；顶得太高腰椎反弓。',
-     next:'单腿臀桥 每侧 10–12 次'},
-    {n:'健腹轮（跪姿）',eq:'膝盖垫毛巾',reps:'5–8',reps3:'8–10',rest:60,
-     cue:'先收肚子、微微含胸，再往前滚，只滚到腰不塌的距离，用肚子的力量拉回来。',
-     err:'滚太远腰往下塌，这是最容易伤腰的地方。',
-     next:'每周滚远一点点；能滚到手臂伸直还不塌腰再考虑站姿'},
-    {n:'平板支撑',eq:'手肘撑地',reps:'20–40 秒',reps3:'40–60 秒',rest:45,
-     cue:'手肘在肩膀正下方，夹紧屁股，肚子往里收，身体一条直线。',
-     err:'屁股翘太高或塌下去；憋气。',
-     next:'到 60 秒后改成单手单脚交替抬起'}
+  A:{name:"胸肩＋核心",day:"周一",warm:"肩绕环前后各 10 次，用轻档推胸和肩推试做，确认肩部无不适。",ex:[
+    {id:"chestpress",n:"坐姿推胸",main:true,eq:"推胸机 · 胸、肱三头肌",reps:"10–15",reps3:"8–12",rest:120,img:"zuozi-tuixiong.gif",
+     setup:"沿用 A 日的座椅高度和同台器械；今天肩胸仍明显酸痛、影响动作时先休息。",
+     cue:"背靠垫，手腕平直。呼气推起，控制还原，肩部保持舒适，不耸肩、不大幅拱腰。",
+     err:"为了追 A 日重量而动作变形；肩部刺痛仍继续。",
+     next:"连续两次所有组做到次数上限、动作稳定且仍留 2 次余力，再加最小一档；尽量使用同台器械便于比较。",
+     alt:"可换轻哑铃卧推 10–15 次；重量不能直接照搬推胸机数字。"},
+    {id:"shoulderpress",n:"器械肩推",eq:"肩推机 · 肩、肱三头肌",reps:"10–15",reps3:"10–15",rest:90,img:"qixie-jiantui.gif",main:true,
+     setup:"座椅调到把手约在耳旁、肘部舒适的位置，背靠垫；先用轻档。",
+     cue:"收腹，不后仰，把手沿轨迹平稳推起，慢慢还原到肩部舒适范围；自然呼吸。",
+     err:"腰拱起借力；耸肩；肩痛还硬往下压。",
+     next:"两组都达到次数上限、无痛且不后仰，连续两次训练如此，再加最小一档。",
+     alt:"肩推机被占：坐姿轻哑铃肩推，先请教练检查；若肩部不适，本动作跳过。"},
+    {n:"坐姿夹胸",eq:"夹胸机 · 胸",reps:"12–15",reps3:"12–15",rest:75,img:"zuozi-jiaxiong.gif",id:"pecdeck",
+     setup:"调座椅使把手或肘垫约在胸部高度；背靠垫，起始角度以肩部舒适为准。",
+     cue:"手肘微弯、角度保持，双臂向胸前合拢，停一下再慢慢打开；肩不耸起，不往前探头。",
+     err:"把手退到身后太多；伸脖子；肩前侧刺痛仍继续。",
+     next:"连续两次所有组做满 15 次且肩部舒适，下次加最小一档。",
+     alt:"器械被占时先做后面的动作再回来；不要临时换成不熟悉的重哑铃飞鸟。"},
+    {id:"lateral",n:"哑铃侧平举",eq:"轻哑铃 · 肩中束",reps:"12–15",reps3:"12–15",rest:60,img:"yaling-cepingju.gif",
+     setup:"先选能不耸肩做满下限的轻哑铃；不要求从固定公斤数起步。",
+     cue:"手肘微弯，手臂在身体侧前方抬起，最高不超过肩高；手腕自然，缓慢放下。",
+     err:"耸肩甩起；刻意拇指朝下倒水；从 2kg 直接跳到 5kg。",
+     next:"先把每组次数做稳，再用更小的重量增幅；健身房没有合适重量就先维持，不硬跳档。",
+     alt:"可用侧平举机，先请教练调座椅；肩部疼痛时跳过。"},
+    {id:"deadbug",n:"死虫",eq:"瑜伽垫 · 核心控制",reps:"6–10 每侧",reps3:"8–12 每侧",rest:60,img:"sichong.gif",core:true,
+     setup:"仰卧，髋膝约 90°，双手向上，腰背舒适贴垫。",
+     cue:"呼气收紧腹部，对侧手脚慢慢伸远再收回。腰开始拱起前就停，左右交替，保持呼吸。",
+     err:"腰拱离地；追求手脚伸得远；憋气。",
+     next:"先把每侧次数做稳，再慢慢加大伸展距离；不需要靠加哑铃进阶。",
+     alt:"难以控制时只动腿，或脚跟交替点地。"},
   ]},
-  B:{name:'训练 B · 拉+手臂',ex:[
-    {n:'反向弓步',eq:'徒手，熟练后两手各拿 5kg',reps:'10 每侧',reps3:'8–12 每侧',rest:75,
-     cue:'一条腿往后退一大步，两个膝盖都弯到约 90°，后膝快碰地，前脚跟发力站起来。',
-     err:'前膝盖往里扣；上身前倾太多。',
-     next:'手拿 5kg → 保加利亚分腿蹲（后脚搭在床沿）'},
-    {n:'哑铃罗马尼亚硬拉',eq:'5kg × 2',reps:'12–15',reps3:'10–12',rest:75,
-     cue:'膝盖微弯不动，屁股往后推，哑铃贴着腿滑到膝盖下方，感觉大腿后侧被拉紧，再夹屁股站起来。背始终是平的。',
-     err:'弯腰驼背去够地；变成了深蹲。',
-     next:'下放 3 秒 → 单腿硬拉 → 换重哑铃'},
-    {n:'双手俯身划船',eq:'5kg × 2',reps:'15',reps3:'10–12',rest:60,
-     cue:'屈膝、上身前倾约 45°、背平，两个手肘往后拉到身体两侧，挤一下肩胛骨。',
-     err:'起身借力；耸肩。',
-     next:'顶端停 2 秒 → 换重哑铃'},
-    {n:'窄距俯卧撑',eq:'手撑床沿或桌边，两手比肩窄',reps:'8–12',reps3:'8–12',rest:60,
-     cue:'跟俯卧撑一样，手肘贴着身体往后走，主要练手臂后侧。',
-     err:'手肘往外张；塌腰。',
-     next:'跟俯卧撑一样，支撑点逐步降低'},
-    {n:'哑铃侧平举',eq:'2kg × 2',reps:'15',reps3:'12–15',rest:45,
-     cue:'手肘微弯，像往两边倒水一样抬到肩膀高度，慢慢放下。',
-     err:'耸肩；甩上去。',
-     next:'做满后换 5kg，次数退回 10 次重新加'},
-    {n:'哑铃弯举 + 椅子臂屈伸',eq:'弯举 5kg × 2；臂屈伸手撑椅子边',reps:'各 10–12',reps3:'各 10–12',rest:60,
-     cue:'弯举：大臂贴身体不动，只动小臂。臂屈伸：背贴着椅子边往下，手肘向后弯到约 90°。',
-     err:'弯举身体前后晃；臂屈伸手肘往外张、下太深压肩膀。',
-     next:'臂屈伸先屈膝做，再把腿伸直；弯举做满后放慢下放'},
-    {n:'死虫 + 健腹轮',eq:'先死虫再健腹轮',reps:'8 每侧 + 5–8',reps3:'10 每侧 + 8–10',rest:60,
-     cue:'死虫：躺着腰贴地，对侧手脚慢慢伸远再收回，全程腰不离地。健腹轮同 A 日。',
-     err:'腰拱离地面；做太快。',
-     next:'死虫手里拿 2kg 哑铃'}
-  ]}
+  B:{name:"背部＋核心",day:"周三",warm:"肩绕环前后各 10 次，用轻档下拉和划船试做，练习躯干稳定、不耸肩。",ex:[
+    {id:"pulldown",n:"高位下拉",main:true,eq:"高位下拉机 · 背、肱二头肌",reps:"10–15",reps3:"8–12",rest:120,img:"gaowei-xiala.gif",
+     setup:"压腿垫固定大腿，脚踩地；握距略宽于肩。够不到横杆时请人递，不跳起来抓。",
+     cue:"躯干只微后倾，肩不耸起，手肘向下带动横杆拉向上胸。慢慢还原，让肩胛自然移动，避免身体来回摆。",
+     err:"拉到脖子后面；猛后仰；只靠手腕往下拽。",
+     next:"连续两次所有组达到上限、躯干不摇晃且留 2 次余力，再加最小一档。",
+     alt:"宽杆不舒服：换中立握窄把下拉，次数不变；仍疼就停下请教练检查。"},
+    {id:"row",n:"坐姿绳索划船",main:true,eq:"低位划船机 · 背、肱二头肌",reps:"10–15",reps3:"8–12",rest:120,img:"zuozi-huachuan.gif",
+     setup:"选中立握把，脚踩踏板、膝微屈；调整位置，起始时能保持背部自然。",
+     cue:"躯干稳定，手肘往身后拉，把手拉向上腹。肩不耸，慢慢放回；肩胛随动作自然前后移动。",
+     err:"后仰甩重量；弯腰够远；手腕内扣。",
+     next:"连续两次所有组做到上限，躯干不摇且留 2 次余力，再加最小一档。",
+     alt:"低位机被占：胸托式器械划船 10–15 次；调座椅，让胸垫支撑躯干。"},
+    {id:"reversefly",n:"器械反向飞鸟",eq:"反向飞鸟机 · 肩后束、上背",reps:"12–15",reps3:"12–15",rest:75,img:"qixie-fanxiang-feiniao.gif",
+     setup:"面对胸垫坐好，座椅调到把手大致与肩同高；先用轻重量，手肘微弯。",
+     cue:"胸贴靠垫，肩膀不耸起，双臂向两侧后方打开到舒适范围，停一下再缓慢收回。",
+     err:"后仰甩动；耸肩；把手拉得过远引起肩前侧不适。",
+     next:"连续两次所有组做满上限、肩部舒适且仍有余力，再加最小一档。",
+     alt:"器械被占先做后面的动作再回来；不要临时换不熟悉的重哑铃飞鸟。"},
+    {id:"straightarm",n:"绳索直臂下压",eq:"高位绳索 · 背阔肌",reps:"12–15",reps3:"12–15",rest:75,img:"zhibi-xiaya.gif",
+     setup:"滑轮调到高位，用直杆或绳把；后退半步，膝微屈、髋稍向后，手肘轻微弯曲并保持。",
+     cue:"收腹、躯干稳定，用背部带动上臂向下，把手压向大腿前侧，再控制还原；不把动作做成屈肘下压。",
+     err:"腰部前后晃动；用手臂猛甩；为压得更低而折腰后仰。",
+     next:"连续两次所有组做到 15 次、躯干稳定且留余力，再小幅加重。",
+     alt:"高位机被占时可先跳过，不额外补重划船；这是补充动作，先保证下拉和划船质量。"},
+    {id:"plank",n:"平板支撑",eq:"瑜伽垫 · 核心稳定",reps:"20–40 秒",reps3:"30–60 秒",rest:60,img:"pingban-zhicheng.gif",core:true,
+     setup:"手肘在肩下，前臂和脚尖撑地；难时可先用膝盖支撑。",
+     cue:"身体大致一条直线，收腹收臀，正常呼吸。腰开始塌或憋气就结束这一组。",
+     err:"塌腰；撅臀；只追求撑得久。",
+     next:"先延长稳定保持时间，到 60 秒后保持质量即可，不必立刻增加复杂变式。",
+     alt:"可改跪姿平板，或换死虫，保持腰背稳定。"},
+  ]},
+  C:{name:"臀腿＋核心",day:"周五",warm:"徒手深蹲 8 次、臀桥 10 次，踝关节活动各 10 次；用轻档腿举、臀桥和腿弯举试做。",ex:[
+    {id:"legpress",n:"腿举",main:true,eq:"腿举机 · 股四头肌、臀",reps:"10–15",reps3:"8–12",rest:120,img:"tuiju.gif",
+     setup:"第一次请巡场教练演示安全挡和解锁方式。背、臀贴靠垫，双脚约肩宽；先用最轻档试做。",
+     cue:"全脚掌踩稳，膝盖朝脚尖方向。缓慢屈膝，只降到臀部仍贴垫的位置，再平稳推起，顶端不猛锁膝。",
+     err:"为了蹲深把臀部卷离靠垫；膝内扣；用手推膝盖帮忙。",
+     next:"连续两次训练所有组都做到上限，仍能再做 2 次且动作稳定，下次加最小一档；若加后做不到下限，就退回。",
+     alt:"没有腿举机：高脚杯深蹲，10–15 次；请教练先检查蹲姿。"},
+    {id:"hipthrust",n:"器械臀桥",main:true,eq:"臀桥机 · 臀、大腿后侧",reps:"10–15",reps3:"8–12",rest:120,img:"qixie-tunqiao.gif",
+     setup:"请巡场教练调整靠背和护垫，护垫放髋部而非腹部；弄清释放手柄和安全挡。",
+     cue:"双脚踩稳，用臀部发力抬髋，至躯干和大腿大致一条线即停；顶端不向后折腰，慢慢下放。",
+     err:"用腰往上顶；脚跟离地；护垫压肚子。",
+     next:"连续两次所有组达到上限、仍留 2 次余力，再加最小一档。",
+     alt:"没有臀桥机：先做地面臀桥 12–15 次，熟练后抱轻哑铃；不独自尝试大重量杠铃臀桥。"},
+    {id:"legcurl",n:"坐姿腿弯举",eq:"腿弯举机 · 大腿后侧",reps:"12–15",reps3:"12–15",rest:75,img:"zuozi-tuiwanju.gif",main:true,
+     setup:"器械转轴与膝关节大致对齐；大腿压垫固定，小腿垫靠近脚踝上方，避开跟腱。",
+     cue:"背靠垫、大腿不动，屈膝把小腿向后下方收，停一下再慢慢还原；全程不弹不甩。",
+     err:"臀部离座；借上身摇动；膝关节被垫子顶得不舒服仍继续。",
+     next:"两组都能稳定做满 15 次，连续两次训练如此，再加最小一档。",
+     alt:"没有坐姿款：请教练指导使用俯卧腿弯举机；不自行改装器械。"},
+    {id:"legextension",n:"坐姿腿屈伸",eq:"腿屈伸机 · 股四头肌",reps:"12–15",reps3:"12–15",rest:75,img:"tui-qushen.gif",
+     setup:"膝关节对准器械转轴，背靠垫；小腿垫靠近脚踝上方，调整到膝部舒适的范围。",
+     cue:"平稳伸膝到舒适接近伸直，停一下，再控制下放；膝盖不猛踢锁死。",
+     err:"甩腿踢起；臀离座；膝痛时仍加重。",
+     next:"两组稳定做满 15 次且无不适，连续两次训练如此，再加最小一档。",
+     alt:"没有器械：轻重量高脚杯深蹲 10–15 次；如果是因为膝痛才换动作，先停下评估。"},
+    {n:"扶稳站姿提踵",eq:"固定扶手、低踏板 · 小腿",reps:"12–20",reps3:"12–20",rest:60,img:"zhanzi-ticong.gif",id:"calfraise",
+     setup:"先徒手，手扶牢固扶手，前脚掌踩稳低踏板；不使用会滑动的凳子。示范中的负重不是起步要求。",
+     cue:"脚踝平稳上提，顶端停一下，慢慢下降到舒适位置；膝自然微屈，不弹不晃。",
+     err:"脚踝向外翻；用弹跳完成；只做很小幅度。",
+     next:"先稳定做满 20 次；连续两次完成后再持轻哑铃，一只手始终扶稳。",
+     alt:"也可用提踵机，请教练调节护垫；不同器械重量不直接比较。"},
+    {n:"卷腹",core:true,eq:"瑜伽垫 · 腹部",reps:"10–15",reps3:"12–20",rest:60,img:"juanfu.gif",id:"crunch",
+     setup:"仰卧屈膝、双脚踩地，手交叉胸前或轻扶头侧。动图示范较难版本，初期在平垫上做。",
+     cue:"呼气把胸廓向骨盆卷起，肩胛略离垫即可，慢慢放回；下背保持舒适贴垫，不做成完整坐起。",
+     err:"用手拉脖子；憋气猛起；借髋部甩动。",
+     next:"先把每次卷起做稳，逐步增加次数；不急着增加负重或换下斜凳。",
+     alt:"颈部不舒服时双手交叉胸前；仍不适可改死虫。"},
+  ]},
 };
+const TYPES=Object.keys(PLAN);
 const HABITS=[
   {k:'p',t:'蛋白质吃够（三餐都有一掌心肉蛋鱼豆）'},
   {k:'s',t:'步数达标'},
@@ -401,9 +465,9 @@ const HABITS=[
 ];
 const TARGET={1:{kcal:1800,p:140,f:55,c:185},2:{kcal:1800,p:140,f:55,c:185},3:{kcal:2400,p:135,f:65,c:320}};
 const PHASES=[
-  {t:'适应期',when:'第 1–4 周',items:['每个动作做 2 组，先把动作学对，每组留 2–3 次的余力','每天步数 6000 以上','饮食直接按 1800 大卡来，先做到三餐都有一掌心蛋白质、炒菜少放油']},
-  {t:'减脂期',when:'第 5 周起，到达标为止',items:['每个动作做 3 组，每组做到只剩 1–2 次余力','每天步数 8000 以上','1800 大卡、蛋白质 140g，预计每周掉 0.4–0.6kg','达标线：体重到 71kg 左右、腰围比开始时小 7–8cm，肚子明显平了（体脂约 16%）']},
-  {t:'增肌期',when:'减脂达标后',items:['必须有更重的哑铃。每个动作做 4 组，每组 8–12 次','热量提到 2400 大卡起，体重每月涨 0.5–1kg','腰围一个月涨超过 1cm 就是吃多了，减半拳主食']}
+  {t:'适应期',when:'第 1–4 周',items:['每个动作做 2 组；先认器械、调座椅、学动作，每组留 2–3 次余力','每天步数 6000 以上','先沿用 1800 大卡作为试行参考，结合 2–3 周记录、饥饿感和训练恢复调整；蛋白质目标约 140g']},
+  {t:'减脂期',when:'第 5 周起，到达标为止',items:['推胸、肩推、下拉、划船、腿举、臀桥、腿弯举等主要动作 3 组；其余辅助和核心 2 组，每组留约 2 次余力','每天步数 8000 以上','以体重周平均缓慢下降、力量和恢复基本稳定为目标，不保证固定减重速度','71kg 左右只是复评参考点：结合腰围、照片、力量和恢复决定下一阶段，不由体重推算体脂']},
+  {t:'增肌期',when:'减脂达标后',items:['主要动作最多 4 组，辅助和核心仍 2 组；恢复不足时先维持减脂期组数','先找到实际维持热量，再增加约 100–200 大卡；2400 大卡仅作起点参考','观察 3–4 周体重、腰围和力量趋势；不因单周涨跌就调整吃法']}
 ];
 
 const KEY='jzzj-v1';
@@ -413,28 +477,49 @@ const parse=s=>{const[a,b,c]=s.split('-').map(Number);return new Date(a,b-1,c)};
 const addDays=(s,n)=>{const d=parse(s);d.setDate(d.getDate()+n);return ymd(d)};
 const diffDays=(a,b)=>Math.round((parse(b)-parse(a))/864e5);
 const md=s=>s.slice(5).replace('-','/');
-const TODAY=ymd(new Date());
+let TODAY=ymd(new Date());
+const GYM='gym-split-v1';
 
 function fresh(){return {v:1,start:TODAY,phase3:false,sessions:[],sets:{},logs:{},habits:{},pick:null}}
 let S;
 try{S=JSON.parse(localStorage.getItem(KEY));}catch(e){}
 if(!S||S.v!==1)S=fresh();
+if(!S.gymStart)S.gymStart=TODAY;
+if(!S.gymRecords)S.gymRecords={};
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 save();
 
-const week=()=>Math.max(1,Math.floor(diffDays(S.start,TODAY)/7)+1);
-const phase=()=>S.phase3?3:(week()<=4?1:2);
-const setsFor=()=>[0,2,3,4][phase()];
+const week=()=>Math.max(1,Math.floor(diffDays(S.gymStart,TODAY)/7)+1);
+const phase=()=>S.gymPhase3?3:(week()<=4?1:2);
+const setsFor=e=>phase()===1||!e.main?2:(phase()===2?3:4);
 const mondayOf=s=>{const d=parse(s);const w=(d.getDay()+6)%7;d.setDate(d.getDate()-w);return ymd(d)};
-const sessionsSorted=()=>[...S.sessions].sort((a,b)=>a.date<b.date?-1:1);
+const sessionsSorted=()=>[...S.sessions].sort((a,b)=>a.date.localeCompare(b.date));
+const gymSessions=()=>sessionsSorted().filter(x=>x.plan===GYM);
+const gymDone=()=>S.sessions.find(x=>x.date===TODAY&&x.plan===GYM);
+const weekTypes=()=>new Set(gymSessions().filter(x=>x.date<=TODAY&&mondayOf(x.date)===mondayOf(TODAY)).map(x=>x.type));
+const sessionName=x=>x.plan===GYM?PLAN[x.type].name:(x.plan?'旧健身房方案 ':'居家方案 ')+x.type;
+const recordKey=(t,id)=>`${TODAY}|${GYM}|${t}|${id}`;
+const escapeHTML=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function lastRecord(id){
+  const keys=Object.keys(S.gymRecords).filter(k=>k<TODAY&&k.endsWith('|'+id)).sort();
+  return keys.length?S.gymRecords[keys[keys.length-1]]:'';
+}
+function restReason(t=curType()){
+  if(S.gymStart>TODAY)return '还没到开始日期。今天可先认器械，等开始日再记录正式训练。';
+  if(S.sessions.some(x=>x.date===TODAY&&x.plan!==GYM))return '今天已记录旧计划训练，先休息，三分化从下次开始。';
+  if(S.sessions.some(x=>x.date===addDays(TODAY,-1)))return '昨天已练力量，今天休息或轻松走路；下次练本周尚未完成的主题。';
+  if(S.sessions.filter(x=>x.date<=TODAY&&mondayOf(x.date)===mondayOf(TODAY)).length>=3)return '本周已练满 3 次力量（含旧计划），今天休息或轻松走路。';
+  if(weekTypes().has(t))return '本周已完成这个主题，请选择尚未完成的主题；不要为凑次数重复同一天。';
+  return '';
+}
 
 function suggested(){
-  const done=S.sessions.find(x=>x.date===TODAY);
+  const done=gymDone();
   if(done)return done.type;
-  const past=sessionsSorted().filter(x=>x.date<TODAY);
-  return past.length?(past[past.length-1].type==='A'?'B':'A'):'A';
+  const completed=weekTypes();
+  return TYPES.find(t=>!completed.has(t))||'A';
 }
-function curType(){return S.pick&&S.pick.date===TODAY?S.pick.type:suggested()}
+function curType(){return S.gymPick&&S.gymPick.plan===GYM&&S.gymPick.date===TODAY?S.gymPick.type:suggested()}
 
 function renderHeader(){
   const p=phase();
@@ -451,29 +536,48 @@ function checkRow(key,text){
   return `<label class="check"><input type="checkbox" data-k="${key}" ${on?'checked':''}><span>${text}</span></label>`;
 }
 function renderToday(){
-  const t=curType(),n=setsFor(),p=phase();
-  $('#pickA').setAttribute('aria-pressed',t==='A');$('#pickB').setAttribute('aria-pressed',t==='B');
-  const thisWeek=S.sessions.filter(x=>mondayOf(x.date)===mondayOf(TODAY)).length;
-  $('#weekCount').textContent=`本周 ${thisWeek}/3`;
-  const done=S.sessions.find(x=>x.date===TODAY);
-  $('#suggest').textContent=done?`今天已完成${PLAN[done.type].name}，明天休息走路。`:`按上次的顺序，今天该练 ${t}。每个动作 ${n} 组。`;
-  $('#warm').innerHTML=WARM.map((w,i)=>checkRow(`${TODAY}|${t}|w${i}`,w)).join('');
-  $('#fin').innerHTML=FIN.map((w,i)=>checkRow(`${TODAY}|${t}|f${i}`,w)).join('');
-  $('#exList').innerHTML=PLAN[t].ex.map((e,i)=>{
-    const key=`${TODAY}|${t}|${i}`;const arr=S.sets[key]||[];
+  const t=curType(),p=phase();
+  TYPES.forEach(type=>$('#pick'+type).setAttribute('aria-pressed',t===type));
+  const completed=weekTypes();
+  $('#weekCount').textContent=`本周 ${completed.size}/3 个主题`;
+  $('#splitWeek').innerHTML=TYPES.map(type=>`<div class="${completed.has(type)?'done':''}"><span>${PLAN[type].name}</span><span>${completed.has(type)?'已完成':'待练'}</span></div>`).join('');
+  const done=gymDone();
+  const rest=restReason();
+  $('#suggest').textContent=done?`今天已完成${PLAN[done.type].name}，明天休息走路。`:rest||`本次练${PLAN[t].name}。${p===1?'每个动作 2 组。':`主要动作 ${p===2?3:4} 组，辅助和核心 2 组。`}`;
+  $('#warm').innerHTML=[WARM[0],PLAN[t].warm,WARM[1]].map((w,i)=>checkRow(`${TODAY}|${GYM}|${t}|w${i}`,w)).join('');
+  $('#fin').innerHTML=FIN.map((w,i)=>checkRow(`${TODAY}|${GYM}|${t}|f${i}`,w)).join('');
+  $('#exList').innerHTML=PLAN[t].ex.map(e=>{
+    const key=recordKey(t,e.id),n=setsFor(e);const arr=S.sets[key]||[];
     const dots=Array.from({length:n},(_,j)=>`<button class="dot" data-k="${key}" data-j="${j}" data-rest="${e.rest}" aria-pressed="${!!arr[j]}" aria-label="第${j+1}组">${j+1}</button>`).join('');
     return `<div class="ex">
       <div class="ex-head"><span class="ex-name">${e.n}</span><span class="ex-dose">${n} × ${p===3?e.reps3:e.reps}</span></div>
       <span class="small muted">${e.eq} · 组间休息 ${e.rest} 秒</span>
       <div class="dots">${dots}</div>
-      <details><summary>动作要点</summary><div class="cue">
-        <p>${e.cue}</p><p><b>常见错误：</b>${e.err}</p><p><b>怎么进阶：</b>${e.next}</p>
-      </div></details></div>`;
+      <details><summary>看动图与动作要点</summary><div class="cue">
+        <img class="demo" data-src="assets/${e.img}" alt="${e.n}动作示范" width="360" height="270">
+        <p><b>先调器械：</b>${e.setup}</p>
+        <p><b>怎么做：</b>${e.cue}</p><p><b>常见错误：</b>${e.err}</p><p><b>怎么进阶：</b>${e.next}</p><p><b>器械被占或没有：</b>${e.alt}</p>
+        <p class="small muted">示范沿用训练手册素材。器械外形和调节方式可能不同，按现场标牌并请巡场教练确认。</p>
+      </div></details>
+      <label class="training-record small muted">本次重量 / 次数 / 座椅档位
+        <input data-record="${key}" value="${escapeHTML(S.gymRecords[key]||'')}" placeholder="${escapeHTML(lastRecord(e.id)?'上次：'+lastRecord(e.id):e.id==='plank'?'例如：30 / 30 秒':e.core?'例如：每侧 8 / 8 次':'例如：20kg，12/12 次，座椅 3')}" maxlength="120" autocomplete="off">
+      </label></div>`;
   }).join('');
   const fb=$('#finishBtn');
   fb.textContent=done?'撤销今天的完成记录':`完成${PLAN[t].name}`;
   fb.className=done?'btn ghost wide':'btn primary wide';
+  fb.disabled=!done&&!!rest;
+  if(!done&&rest)fb.textContent='今天先休息';
+  $('#exList').querySelectorAll('details').forEach(d=>d.addEventListener('toggle',()=>{
+    const img=d.querySelector('img[data-src]');
+    if(d.open&&img){img.src=img.dataset.src;delete img.dataset.src;}
+  }));
 }
+
+document.addEventListener('input',e=>{
+  const key=e.target.dataset&&e.target.dataset.record;
+  if(key){S.gymRecords[key]=e.target.value;save();}
+});
 
 document.addEventListener('change',e=>{
   const k=e.target.dataset&&e.target.dataset.k;
@@ -488,11 +592,11 @@ $('#exList').addEventListener('click',e=>{
   b.setAttribute('aria-pressed',!!arr[j]);
   if(arr[j])startRest(+b.dataset.rest);
 });
-['A','B'].forEach(t=>$('#pick'+t).addEventListener('click',()=>{S.pick={date:TODAY,type:t};save();renderToday();}));
+TYPES.forEach(t=>$('#pick'+t).addEventListener('click',()=>{S.gymPick={date:TODAY,type:t,plan:GYM};save();renderToday();}));
 $('#finishBtn').addEventListener('click',()=>{
-  const done=S.sessions.find(x=>x.date===TODAY);
-  if(done)S.sessions=S.sessions.filter(x=>x.date!==TODAY);
-  else S.sessions.push({date:TODAY,type:curType()});
+  const done=gymDone();
+  if(done)S.sessions=S.sessions.filter(x=>!(x.date===TODAY&&x.plan===GYM));
+  else if(!restReason())S.sessions.push({date:TODAY,type:curType(),plan:GYM});
   save();renderToday();
 });
 
@@ -512,7 +616,7 @@ function renderFood(){
   const p=phase(),T=TARGET[p];
   $('#targets').innerHTML=[['热量',T.kcal,'大卡'],['蛋白质',T.p,'克'],['脂肪',T.f,'克'],['碳水',T.c,'克']]
     .map(([a,v,u])=>`<div><span class="label">${a}</span><span class="v">${v}</span><span class="u">${u}</span></div>`).join('');
-  $('#targetNote').textContent=p===3?'增肌期：比维持热量多 200–300 大卡，体重每月涨 0.5–1kg 正好。':'你平时每天大约消耗 2300 大卡，吃 1800 就有 500 大卡缺口，一周大约掉 0.5kg。蛋白质吃够，减的才是脂肪不是肌肉。';
+  $('#targetNote').textContent=p===3?'增肌期：2400 大卡只是参考；先看实际维持热量，再增加约 100–200 大卡，结合 3–4 周体重、腰围和力量判断。':'1800 大卡是原计划的试行参考，不是测得的个人需求。结合 2–3 周体重、腰围、饥饿感和训练恢复调整；力量持续下降或明显疲劳时先复评，别继续硬减。';
   const steps=p===1?'6000':'8000';
   const h=S.habits[TODAY]||{};
   $('#habits').innerHTML=HABITS.map(x=>`<label class="check"><input type="checkbox" data-h="${x.k}" ${h[x.k]?'checked':''}><span>${x.k==='s'?`步数 ${steps} 以上`:x.t}</span></label>`).join('');
@@ -539,19 +643,22 @@ function renderLog(){
   ].map(([a,v,u])=>`<div class="card"><div class="label">${a}</div><div class="v">${v}</div><div class="small muted">${u}</div></div>`).join('');
 
   const cur=avgRange(addDays(TODAY,-6),TODAY),prev=avgRange(addDays(TODAY,-13),addDays(TODAY,-7));
+  const prev2=avgRange(addDays(TODAY,-20),addDays(TODAY,-14));
+  const recentWaist=wa.filter(x=>x.d>=addDays(TODAY,-13)&&x.d<=TODAY);
+  const waistFalling=recentWaist.length>=2&&recentWaist[recentWaist.length-1].waist<recentWaist[0].waist;
   let adv='';
   if(cur==null||prev==null){adv=`<div class="note ok">连续记两周（每周至少 3 天）后，这里会按周平均体重告诉你该不该调整吃法。</div>`}
   else{
     const d=cur-prev,p=phase();let msg,ok=true;
     if(p===3){
-      if(d<0.1){msg='体重没怎么涨，每天加半拳主食。';ok=false}
-      else if(d>0.35){msg='涨得偏快，多半是脂肪，每天减半拳主食。';ok=false}
-      else msg='涨得正好，继续。';
+      msg='增肌期先结合 3–4 周体重、腰围和力量走势判断，不按这一周的涨跌立刻加减吃法。';
     }else{
       const loss=-d;
-      if(loss>1&&week()>2){msg='掉得太快，容易掉肌肉，每天多吃半拳主食。';ok=false}
-      else if(loss<0.2){msg='掉得偏慢。下周还这样就每天少吃半拳主食，或多走 2000 步。';ok=false}
-      else msg='节奏正好，吃法不变。';
+      if(loss>1&&week()>2){msg='本周掉得较快，先复查称重条件、饮食和训练恢复，必要时增加摄入。';ok=false}
+      else if(loss<0.2&&waistFalling){msg='体重变化小，但近期腰围下降，先维持吃法并继续观察。'}
+      else if(loss<0.2&&prev2!=null&&prev2-prev<0.2){msg='连续两个周变化都下降不足 0.2kg。先核对执行，再小幅减少摄入或增加走路，选一项调整。';ok=false}
+      else if(loss<0.2){msg='这次周变化较小，先维持并继续记录，下周再结合腰围判断。'}
+      else msg='先维持吃法，继续看体重、腰围和训练恢复。';
     }
     adv=`<div class="note${ok?' ok':''}"><b class="num">本周平均 ${cur.toFixed(1)}kg，上周 ${prev.toFixed(1)}kg（${d>0?'+':''}${d.toFixed(1)}）。</b>${msg}</div>`;
   }
@@ -594,14 +701,15 @@ $('#recent').addEventListener('click',e=>{
 
 function reportText(){
   const from=addDays(TODAY,-13);
-  const L=sortedLogs().filter(x=>x.d>=from);
-  const ss=sessionsSorted().filter(x=>x.date>=from);
+  const L=sortedLogs().filter(x=>x.d>=from&&x.d<=TODAY);
+  const ss=sessionsSorted().filter(x=>x.date>=from&&x.date<=TODAY);
   const hab=HABITS.map(x=>{let c=0;for(let i=0;i<7;i++){const h=S.habits[addDays(TODAY,-i)]||{};if(h[x.k])c++}return `${x.k==='s'?'步数':x.t.split('（')[0].split('：')[0]} ${c}/7`});
-  return [`【减脂增肌记录】第${week()}周 · ${['','适应期','减脂期','增肌期'][phase()]}（${S.start} 开始）`,
-    `起点 ${BASE.w}kg / 体脂 ${BASE.bf}%`,
+  return [`【减脂增肌记录】第${week()}周 · ${['','适应期','减脂期','增肌期'][phase()]}（${S.gymStart} 开始）`,
+    `健身房训练开始：${S.gymStart}；身体起点 ${BASE.w}kg / 体脂参考 ${BASE.bf}%`,
     '近两周体重腰围：',...(L.length?L.map(x=>`${md(x.d)}  ${x.w?x.w.toFixed(1)+'kg':''}${x.waist?'  腰'+x.waist:''}`):['（没记）']),
-    `近两周训练 ${ss.length} 次：${ss.map(x=>md(x.date)+x.type).join('、')||'无'}`,
-    `近7天打卡：${hab.join('，')}`].join('\n');
+    `近两周训练 ${ss.length} 次：${ss.map(x=>md(x.date)+sessionName(x)).join('、')||'无'}`,
+    `近7天打卡：${hab.join('，')}`,
+    '近两周器械记录：',...Object.entries(S.gymRecords).filter(([k,v])=>k.slice(0,10)>=from&&k.slice(0,10)<=TODAY&&v).sort(([a],[b])=>a.localeCompare(b)).map(([k,v])=>{const [d,version,t,id]=k.split('|');const ex=Object.values(PLAN).flatMap(p=>p.ex).find(e=>e.id===id);const label=version===GYM?PLAN[t].name:'旧健身房方案 '+t;return `${md(d)} ${label} ${ex?ex.n:id}：${v}`})].join('\n');
 }
 $('#copyBtn').addEventListener('click',()=>{
   const txt=reportText(),box=$('#copyBox'),b=$('#copyBtn');
@@ -612,19 +720,20 @@ $('#copyBtn').addEventListener('click',()=>{
 
 function renderPlan(){
   const p=phase();
+  $('#weeklyPlan').innerHTML=TYPES.map(t=>`<p><b>${PLAN[t].day}：${PLAN[t].name}</b><br><span class="small muted">${PLAN[t].ex.map(e=>e.n).join('、')}</span></p>`).join('');
   $('#phases').innerHTML=PHASES.map((x,i)=>`<div class="phase${p===i+1?' on':''}"><span class="n">${i+1}</span><div class="stack" style="gap:6px">
     <div class="row"><h3>${x.t}</h3><span class="small muted">${x.when}${p===i+1?' · 现在':''}</span></div>
     <ul class="small">${x.items.map(t=>`<li>${t}</li>`).join('')}</ul>
-    ${i===1?`<p class="small muted">照每周 0.5kg 算，大约在 ${addDays(S.start,7*19).replace(/-/g,'/')} 前后达标。</p>`:''}
+    ${i===1?'<p class="small muted">按实际记录复评，不按预定日期自动结束减脂。</p>':''}
   </div></div>`).join('');
-  $('#startDate').value=S.start;
-  $('#phaseBtn').textContent=S.phase3?'回到减脂期':'体脂达标了，切换到增肌期';
+  $('#startDate').value=S.gymStart;
+  $('#phaseBtn').textContent=S.gymPhase3?`回到${week()<=4?'适应期':'减脂期'}`:'减脂阶段结束，切换到增肌期';
 }
-$('#startDate').addEventListener('change',e=>{if(e.target.value){S.start=e.target.value;save();renderAll()}});
+$('#startDate').addEventListener('change',e=>{if(e.target.value){S.gymStart=e.target.value;save();renderAll()}});
 $('#phaseBtn').addEventListener('click',()=>{
   const b=$('#phaseBtn');
   if(!b.dataset.armed){b.dataset.armed='1';b.textContent='确定切换？再点一次';setTimeout(()=>{delete b.dataset.armed;renderPlan()},4000);return}
-  delete b.dataset.armed;S.phase3=!S.phase3;save();renderAll();
+  delete b.dataset.armed;S.gymPhase3=!S.gymPhase3;save();renderAll();
 });
 
 const TABS=['today','food','log','plan'];
@@ -639,6 +748,13 @@ document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',
 function renderAll(){renderHeader();renderToday();renderFood();renderLog();renderPlan()}
 renderAll();
 const h=location.hash.slice(1);show(TABS.includes(h)?h:'today');
+function syncDay(){
+  const now=ymd(new Date());if(now===TODAY)return;
+  TODAY=now;$('#fDate').value=TODAY;stopRest();renderAll();
+}
+window.addEventListener('focus',syncDay);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncDay()});
+setInterval(syncDay,30000);
 </script>
 
 </body>
